@@ -60,12 +60,12 @@ Login
   Input text  name=Tender[items][${index}][quantity]  ${item.quantity}
   Select From List By Value  name=Tender[items][${index}][unit][code]  ${item.unit.code}
   Click Element  name=Tender[items][${index}][classification][description]
-  Wait Until Element Is Visible  id=search
-  Input text  id=search  ${item.classification.description}
-  Wait Until Page Contains  ${item.classification.description}
-  Click Element  xpath=//span[contains(text(),'${item.classification.description}')]
+  Wait Until Element Is Visible  id=search_code
+  Input text  id=search_code  ${item.classification.id}
+  Wait Until Page Contains  ${item.classification.id}
+  Click Element  xpath=//span[contains(text(),'${item.classification.id}')]
   Click Element  id=btn-ok
-  Wait Until Element Is Not Visible  xpath=//div[@class="modal-backdrop fade"]  10
+  Run Keyword And Ignore Error  Wait Until Element Is Not Visible  xpath=//div[@class="modal-backdrop fade"]  10
   Input text  name=Tender[items][${index}][address][countryName]  ${item.deliveryAddress.countryName}
   Input text  name=Tender[items][${index}][address][region]  ${item.deliveryAddress.region}
   Input text  name=Tender[items][${index}][address][locality]  ${item.deliveryAddress.locality}
@@ -142,11 +142,6 @@ Login
   ${red}=  Evaluate  "\\033[1;31m"
   Run Keyword If  '${field_name}' == 'status'  Click Element   xpath=//a[text()='Інформація про аукціон']
   ${value}=  Run Keyword If
-  #...  'unit.code' in '${field_name}'  Log To Console   ${red}\n\t\t\t Це поле не виводиться на opentender
-  #...  ELSE IF  'unit' in '${field_name}'  Get Text  xpath=//*[@tid="items.quantity"]
-  #...  ELSE IF  'deliveryLocation' in '${field_name}'  Log To Console  ${red}\n\t\t\t Це поле не виводиться на opentender
-  #...  ELSE IF  'items' in '${field_name}'  Get Text  xpath=//*[@tid="${field_name.replace('[0]', '')}"]
-  #...  ELSE IF  'questions' in '${field_name}'  opentender.Отримати інформацію із запитання  ${field_name}
   ...  'value' in '${field_name}'  Get Text  xpath=//*[@tid="value.amount"]
   ...  ELSE IF  '${field_name}' == 'auctionPeriod.startDate'  Get Text  xpath=(//*[@tid="tenderPeriod.endDate"])[2]
   ...  ELSE  Get Text  xpath=//*[@tid="${field_name.replace('auction', 'tender')}"]
@@ -263,6 +258,7 @@ Login
 Підтвердити постачальника
   [Arguments]  ${username}  ${tender_uaid}  ${award_num}
   opentender.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
+  Wait Until Element Is Visible  xpath=//a[text()='Таблиця квалiфiкацiї']
   Click Element  xpath=//a[text()='Таблиця квалiфiкацiї']
   Wait Until Element Is Visible  xpath=//button[@name='protokol_ok']
   Choose Ok On Next Confirmation
@@ -276,6 +272,7 @@ Login
   [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
   ${file_path}=  get_upload_file_path
   opentender.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
+  Wait Until Element Is Visible  xpath=//a[text()='Таблиця квалiфiкацiї']
   Click Element  xpath=//a[text()='Таблиця квалiфiкацiї']
   Click Element  xpath=//button[contains(@class, 'tender_contract_btn')]
   Choose File  name=FileUpload[file]  ${file_path}
