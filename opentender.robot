@@ -258,8 +258,9 @@ Login
 Підтвердити постачальника
   [Arguments]  ${username}  ${tender_uaid}  ${award_num}
   opentender.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
-  Wait Until Element Is Visible  xpath=//a[text()='Таблиця квалiфiкацiї']
-  Click Element  xpath=//a[text()='Таблиця квалiфiкацiї']
+  Wait Until Keyword Succeeds   30 x   30 s  Run Keywords
+  ...  Reload Page
+  ...  AND  Click Element  xpath=//a[text()='Таблиця квалiфiкацiї']
   Wait Until Element Is Visible  xpath=//button[@name='protokol_ok']
   Choose Ok On Next Confirmation
   Click Element  xpath=//button[@name='protokol_ok']
