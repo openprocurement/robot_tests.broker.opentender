@@ -112,6 +112,23 @@ Login
   Wait Until Page Contains  ${field_value}  30
 
 ###############################################################################################################
+##########################################    СКАСУВАННЯ    ###################################################
+###############################################################################################################
+
+Скасувати закупівлю
+  [Arguments]  ${username}  ${tender_uaid}  ${cancellation_reason}  ${document}  ${new_description}
+  opentender.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+  Click Element  xpath=//a[contains(@href,'/tender/cancel/')]
+  Select From List By Value  id=cancellation-relatedlot  tender
+  Input Text  id=cancellation-reason  ${cancellation_reason}
+  Choose File  name=FileUpload[file]  ${document}
+  Wait Until Element Is Visible  name=Tender[cancellations][documents][0][title]
+  Input Text  name=Tender[cancellations][documents][0][title]  ${document.replace('/tmp/', '')}
+  Click Element  xpath=//button[@type="submit"]
+  Wait Until Element Is Visible  xpath=//div[contains(@class,'alert-success')]
+  Wait Until Keyword Succeeds  30 x  1 m  Звірити статус тендера  ${username}  ${tender_uaid}  active
+
+###############################################################################################################
 ############################################    ПИТАННЯ    ####################################################
 ###############################################################################################################
 
@@ -140,13 +157,20 @@ Login
 Отримати інформацію із тендера
   [Arguments]  ${username}  ${tender_uaid}  ${field_name}
   ${red}=  Evaluate  "\\033[1;31m"
-  Run Keyword If  '${field_name}' == 'status'  Click Element   xpath=//a[text()='Інформація про аукціон']
   ${value}=  Run Keyword If
-  ...  'value' in '${field_name}'  Get Text  xpath=//*[@tid="value.amount"]
+  ...  'status' in '${field_name}'  Отримати інформацію про статус  ${field_name}
+  ...  ELSE IF  'value' in '${field_name}'  Get Text  xpath=//*[@tid="value.amount"]
   ...  ELSE IF  '${field_name}' == 'auctionPeriod.startDate'  Get Text  xpath=(//*[@tid="tenderPeriod.endDate"])[2]
+  ...  ELSE IF  'cancellations' in '${field_name}'  Get Text  xpath=//*[@tid="${field_name.replace('[0]','')}"]
   ...  ELSE  Get Text  xpath=//*[@tid="${field_name.replace('auction', 'tender')}"]
   ${value}=  adapt_view_data  ${value}  ${field_name}
   [return]  ${value}
+
+Отримати інформацію про статус
+  [Arguments]  ${field_name}
+  Click Element   xpath=//a[text()='Інформація про аукціон']
+  ${status}=  Get Text  xpath=//h2[@tid="${field_name.split('.')[-1]}"]
+  [return]  ${status}
 
 Отримати інформацію із предмету
   [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${field_name}
@@ -172,6 +196,11 @@ Login
   ${bid_value}=   Convert To Number   ${bid_value.split(' ')[-2]}
   [return]  ${bid_value}
 
+Отримати інформацію із документа
+  [Arguments]  ${username}  ${tender_uaid}  ${doc_id}  ${field}
+  ${doc_value}=  Get Text  xpath=//*[@tid='cancellations.${field}']
+  [return]  ${doc_value}
+
 ###############################################################################################################
 #######################################    ПОДАННЯ ПРОПОЗИЦІЙ    ##############################################
 ###############################################################################################################
@@ -191,7 +220,7 @@ Login
   Go To  ${url}
 
 Скасувати цінову пропозицію
-  [Arguments]  ${username}  ${tender_uaid}  ${bid}
+  [Arguments]  ${username}  ${tender_uaid}
   opentender.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
   Execute Javascript  window.confirm = function(msg) { return true; }
   Click Element  xpath=//button[@name="delete_bids"]
@@ -200,7 +229,7 @@ Login
   [Arguments]  ${username}  ${tender_uaid}  ${fieldname}  ${fieldvalue}
   ${file_path}=  get_upload_file_path
   opentender.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
-  opentender.Скасувати цінову пропозицію  ${username}  ${tender_uaid}  ${EMPTY}
+  opentender.Скасувати цінову пропозицію  ${username}  ${tender_uaid}
   Wait Until Element Is Visible   xpath=//input[contains(@name, '[value][amount]')]
   ConvToStr And Input Text  xpath=//input[contains(@name, '[value][amount]')]  ${fieldvalue}
   Choose File  name=FileUpload[file]  ${file_path}
@@ -215,7 +244,7 @@ Login
   [Arguments]  ${username}  ${path}  ${tender_uaid}  ${doc_type}=documents
   opentender.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
   ${value}=  opentender.Отримати інформацію із пропозиції  ${username}  ${tender_uaid}  ${EMPTY}
-  opentender.Скасувати цінову пропозицію  ${username}  ${tender_uaid}  ${EMPTY}
+  opentender.Скасувати цінову пропозицію  ${username}  ${tender_uaid}
   Wait Until Element Is Visible   xpath=//input[contains(@name, '[value][amount]')]
   ConvToStr And Input Text  xpath=//input[contains(@name, '[value][amount]')]  ${value}
   Choose File  name=FileUpload[file]  ${path}
@@ -279,6 +308,7 @@ Login
   Choose File  name=FileUpload[file]  ${file_path}
   Click Element  xpath=(//button[text()='Завантажити'])[2]
   Wait Until Keyword Succeeds  5 x  0.5 s  Click Element  xpath=//button[contains(@class, 'tender_contract_btn')]
+  Wait Until Element Is Visible  xpath=(//input[@name="Contract[0][contractNumber]"])[2]
   Input Text  xpath=(//input[@name="Contract[0][contractNumber]"])[2]  ${contract_num}
   Choose Ok On Next Confirmation
   Click Element  xpath=(//button[text()='Активувати'])[2]
