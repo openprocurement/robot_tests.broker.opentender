@@ -291,9 +291,9 @@ Login
   ...  Reload Page
   ...  AND  Click Element  xpath=//a[text()='Таблиця квалiфiкацiї']
   Wait Until Element Is Visible  xpath=//button[@name='protokol_ok']
-  Choose Ok On Next Confirmation
+  Execute Javascript  window.confirm = function(msg) { return true; }
   Click Element  xpath=//button[@name='protokol_ok']
-  Confirm Action
+  Sleep  3
   Wait Until Element Is Visible  xpath=//button[text()='Визнати переможцем']
   Click Element  xpath=//button[text()='Визнати переможцем']
   Wait Until Element Is Visible   xpath=//button[contains(@class, 'tender_contract_btn')]
