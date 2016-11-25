@@ -33,7 +33,7 @@ def convert_string_from_dict_opentender(string):
         u'КВАЛIФIКАЦIЯ ПЕРЕМОЖЦЯ': u'active.qualification',
         u'ТОРГИ ВІДМІНЕНО': u'unsuccessful',
         u'ЗАВЕРШЕНА': u'complete',
-        u'ВIДМIНЕНА': u'active',
+        u'ВIДМIНЕНА': u'cancelled',
     }.get(string, string)
 
 
