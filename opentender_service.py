@@ -34,6 +34,7 @@ def convert_string_from_dict_opentender(string):
         u'ТОРГИ ВІДМІНЕНО': u'unsuccessful',
         u'ЗАВЕРШЕНА': u'complete',
         u'ВIДМIНЕНА': u'cancelled',
+        u'Торги були відмінені.': u'active',
     }.get(string, string)
 
 
