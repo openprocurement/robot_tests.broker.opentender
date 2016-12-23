@@ -1,5 +1,4 @@
 *** Settings ***
-Library  Selenium2Screenshots
 Library  Selenium2Library
 Library  BuiltIn
 Library  Collections
@@ -55,8 +54,7 @@ Login
   Conv And Select From List By Value  name=Tender[value][valueAddedTaxIncluded]  ${tender_data.data.value.valueAddedTaxIncluded}
   ConvToStr And Input Text  name=Tender[value][amount]  ${tender_data.data.value.amount}
   ConvToStr And Input Text  name=Tender[minimalStep][amount]  ${tender_data.data.minimalStep.amount}
-  ConvToStr And Input Text  name=Tender[guarantee][amount]  400000
-#  ConvToStr And Input Text  name=Tender[guarantee][amount]  ${tender_data.data.guarantee.amount}
+  ConvToStr And Input Text  name=Tender[guarantee][amount]  ${tender_data.data.guarantee.amount}
   Input text  name=Tender[title]  ${tender_data.data.title}
   Input text  name=Tender[dgfID]  ${tender_data.data.dgfID}
   Input text  name=Tender[description]  ${tender_data.data.description}
@@ -96,14 +94,12 @@ Login
   [Arguments]  ${username}  ${tender_uaid}  ${item}
   opentender.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   Click Element  xpath=//a[contains(text(),'Редагувати')]
-  # Так зроблено через геніальну організацію роботи ЦБД
   Run Keyword And Ignore Error  Click Element  xpath=(//button[contains(@class,'add_item')])[last()]
 
 Видалити предмет закупівлі
   [Arguments]  ${username}  ${tender_uaid}  ${item_id}
   opentender.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   Click Element  xpath=//a[contains(text(),'Редагувати')]
-  # Так зроблено через геніальну організацію роботи ЦБД
   Run Keyword And Ignore Error  Click Element  xpath=(//button[contains(@class,'delete_item')])[last()]
 
 Завантажити документ
