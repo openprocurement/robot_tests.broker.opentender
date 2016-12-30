@@ -107,6 +107,7 @@ Login
   Switch Browser  ${username}
   opentender.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   Click Element  xpath=//a[contains(text(),'Редагувати')]
+  Wait Until Element Is Visible  xpath=(//input[@name="FileUpload[file]"]/ancestor::a[contains(@class,'uploadfile')])[last()]
   Choose File  xpath=(//*[@name="FileUpload[file]"])[last()]  ${filepath}
   Select From List By Value   xpath=//label[text()='${filepath.split('/')[-1]}']/../../descendant::*[contains(@name,"[documentType]")]   illustration
   Input Text  xpath=//label[text()='${filepath.split('/')[-1]}']/../../descendant::input[contains(@name,'[title]')]   ${filepath.split('/')[-1]}
@@ -142,7 +143,7 @@ Login
   Select From List By Value   xpath=//label[text()='${filepath.split('/')[-1]}']/../../descendant::*[contains(@name,"[documentType]")]   ${documentType}
   Input Text  xpath=//label[text()='${filepath.split('/')[-1]}']/../../descendant::input[contains(@name,'[title]')]   ${filepath.split('/')[-1]}
   Click Button  xpath=//button[@class="btn btn-default btn_submit_form"]
-  Wait Until Element Is Not Visible   xpath=//button[@class="btn btn-default btn_submit_form"]
+  Wait Until Keyword Succeeds  20 x  1 s  Element Should Not Be Visible  xpath=//button[@class="btn btn-default btn_submit_form"]
   Дочекатися завантаження документу
 
 Додати публічний паспорт активу
@@ -174,7 +175,7 @@ Login
 
 Перейти на сторінку з інформацією про тендер
   [Arguments]  ${tender_uaid}
-  Click Element  xpath=//h3[contains(text(),'${tender_uaid}')]/ancestor::div[@class="row"]/descendant::a[contains(@href,'/tender/view/')]
+  Click Element  xpath=//h3[contains(text(),'${tender_uaid}') and contains('${tender_uaid}',text())]/ancestor::div[@class="row"]/descendant::a[contains(@href,'/tender/view/')]
   Wait Until Element Is Visible  xpath=//*[@tid="tenderID"]
 
 Оновити сторінку з тендером
@@ -466,6 +467,7 @@ Login
 Скасування рішення кваліфікаційної комісії
   [Arguments]  ${username}  ${tender_uaid}  ${award_num}
   Перейти на сторінку кваліфікації учасників  ${username}  ${tender_uaid}
+  Wait Until Element Is Enabled  xpath=//button[@data-type="cancelled"]
   Click Element  xpath=//button[@data-type="cancelled"]
   Wait Until Element Is Visible  name=btn_cancel
   Click Element  name=btn_cancel
