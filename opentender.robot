@@ -168,9 +168,11 @@ Login
   Go To  http://test-eauction.open-tender.com.ua
   Click Element  xpath=//a[@href="http://test-eauction.open-tender.com.ua/tenders"]
   Click Element  xpath=//a[@href="http://test-eauction.open-tender.com.ua/tenders/index"]
-  Wait Until Element Is Visible  name=TendersSearch[tender_cbd_id]
+  Wait Until Element Is Visible  id=more-filter
+  Click Element  id=more-filter
+  Wait Until Keyword Succeeds  10 x  0.4 s  Element Should Be Visible  name=TendersSearch[tender_cbd_id]
   Input text  name=TendersSearch[tender_cbd_id]  ${tender_uaid}
-  Click Element  xpath=//button[@class="btn btn-success top-buffer margin23"]
+  Click Element  xpath=//button[@tid="search"]
   Wait Until Keyword Succeeds  30x  400ms  Перейти на сторінку з інформацією про тендер  ${tender_uaid}
 
 Перейти на сторінку з інформацією про тендер
