@@ -166,8 +166,8 @@ Login
   [Arguments]  ${username}  ${tender_uaid}
   Switch browser  ${username}
   Go To  http://test-eauction.open-tender.com.ua/tenders/index
-  ${status}=  Run Keyword And Return Status  Element Should Not Be Visible  xpath=//button[@data-dismiss="modal"]
-  Run Keyword If  not ${status}  Wait Until Keyword Succeeds  10 x  1 s  Закрити модалку з новинами
+  ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  xpath=//button[@data-dismiss="modal"]  5
+  Run Keyword If  ${status}  Wait Until Keyword Succeeds  10 x  1 s  Закрити модалку з новинами
   #Click Element  xpath=//a[@href="http://test-eauction.open-tender.com.ua/tenders"]
   #Click Element  xpath=//a[@href="http://test-eauction.open-tender.com.ua/tenders/index"]
   Wait Until Element Is Visible  id=more-filter
@@ -497,7 +497,7 @@ Login
   [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${filepath}
   Перейти на сторінку кваліфікації учасників   ${username}  ${tender_uaid}
   Click Element  xpath=//button[contains(@class, 'tender_contract_btn')]
-  Wait Until Element Is Visible  xpath=(//*[@id="contract_form1"])[last()]  10
+  Wait Until Element Is Visible  xpath=(//*[contains(@id,"contract_form")])[last()]  10
   Choose File  name=FileUpload[file]  ${filepath}
   Click Element  xpath=(//button[text()='Завантажити'])[2]
   Wait Until Keyword Succeeds  15 x  60 s  Run Keywords
@@ -505,11 +505,15 @@ Login
   ...  AND  Wait Until Element Is Visible  xpath=//button[contains(@class, 'tender_contract_btn')]
   ...  AND  Click Element  xpath=//button[contains(@class, 'tender_contract_btn')]
   ...  AND  Page Should Not Contain  Документ завантажується...
+  Reload Page
 
 Підтвердити підписання контракту
   [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
   Перейти на сторінку кваліфікації учасників   ${username}  ${tender_uaid}
+  ${filepath}=  get_upload_file_path
   Wait Until Keyword Succeeds  5 x  0.5 s  Click Element  xpath=//button[contains(@class, 'tender_contract_btn')]
+  ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  (//input[contains(@name,"[contractNumber]")])[2]  5
+  Run Keyword If  not ${status}  opentender.Завантажити угоду до тендера  ${username}  ${tender_uaid}  ${contract_num}  ${filepath}
   Wait Until Element Is Visible  xpath=(//input[contains(@name,"[contractNumber]")])[2]
   Wait Until Keyword Succeeds  5 x  1 s  Run Keywords
   ...  Input Text  xpath=(//input[contains(@name,"[contractNumber]")])[2]  777
