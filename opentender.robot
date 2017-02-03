@@ -514,6 +514,7 @@ Login
   Wait Until Keyword Succeeds  5 x  0.5 s  Click Element  xpath=//button[contains(@class, 'tender_contract_btn')]
   ${status}=  Run Keyword And Return Status  Wait Until Element Is Visible  (//input[contains(@name,"[contractNumber]")])[2]  5
   Run Keyword If  not ${status}  opentender.Завантажити угоду до тендера  ${username}  ${tender_uaid}  ${contract_num}  ${filepath}
+  Wait Until Keyword Succeeds  5 x  0.5 s  Click Element  xpath=//button[contains(@class, 'tender_contract_btn')]
   Wait Until Element Is Visible  xpath=(//input[contains(@name,"[contractNumber]")])[2]
   Wait Until Keyword Succeeds  5 x  1 s  Run Keywords
   ...  Input Text  xpath=(//input[contains(@name,"[contractNumber]")])[2]  777
