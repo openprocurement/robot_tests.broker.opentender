@@ -335,6 +335,7 @@ Login
   ${file_path}=  get_upload_file_path
   opentender.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
   Run Keyword And Ignore Error  opentender.Скасувати цінову пропозицію  ${username}  ${tender_uaid}
+  Execute Javascript  document.documentElement.scrollTop=5000
   Run Keyword If  '${MODE}' != 'dgfInsider'  ConvToStr And Input Text  xpath=//input[contains(@name, '[value][amount]')]  ${bid.data.value.amount}
   ...  ELSE  Click Element  xpath=//input[@id="bid-participate"]/..
   Choose File  name=FileUpload[file]  ${file_path}
@@ -384,6 +385,7 @@ Login
 Завантажити документ в ставку
   [Arguments]  ${username}  ${path}  ${tender_uaid}  ${doc_type}=documents
   opentender.Пошук тендера по ідентифікатору   ${username}  ${tender_uaid}
+  Execute Javascript  document.documentElement.scrollTop=5000
   ${value}=  Run Keyword If  '${MODE}' != 'dgfInsider'  Run Keywords
   ...  opentender.Отримати інформацію із пропозиції  ${username}  ${tender_uaid}  ${EMPTY}
   ...  AND  opentender.Скасувати цінову пропозицію  ${username}  ${tender_uaid}
