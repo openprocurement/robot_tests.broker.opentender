@@ -116,7 +116,7 @@ Library  opentender_service.py
     opentender.Пошук об’єкта МП по ідентифікатору  ${username}  ${tender_uaid}
     Click Element  xpath=//a[contains(@href, "asset/update")]
     Wait Until Element Is Visible  xpath=//form[@id="asset-form"]
-    Click Element  xpath=//button[@id="add-item-to-asset"]
+    Scroll To And Click Element  xpath=//button[@id="add-item-to-asset"]
     Run Keyword And Ignore Error  opentender.Додати предмет МП  ${item_data}
     Run Keyword And Ignore Error  opentender.Scroll To And Click Element   id=btn-submit-form
     Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]
