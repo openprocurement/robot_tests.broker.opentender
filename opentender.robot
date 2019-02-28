@@ -84,8 +84,8 @@ ${host}  http://test-eauction.open-tender.com.ua
     Click Element  xpath=//*[@id="classification-${item_number}-description"]
     Wait Until Element Is Visible  xpath=//*[@class="modal-title"]
     Input Text  xpath=//*[@placeholder="Пошук по коду"]  ${item_data.classification.id}
-    Wait Until Element Is Visible  xpath=//*[@id="${item_data.classification.id}"]
-    Scroll To And Click Element  xpath=//*[@id="${item_data.classification.id}"]
+    Wait Until Element Is Visible  xpath=//*[contains(@id,"${item_data.classification.id}")][last()]
+    Scroll To And Click Element  xpath=//*[contains(@id,"${item_data.classification.id}")][last()]
     Wait Until Element Is Enabled  xpath=//button[@id="btn-ok"]
     Click Element  xpath=//button[@id="btn-ok"]
     Wait Until Element Is Not Visible  xpath=//*[@class="fade modal"]
