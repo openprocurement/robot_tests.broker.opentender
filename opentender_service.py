@@ -17,8 +17,8 @@ def prepare_tender_data_asset(tender_data):
     tender_data['data']['assetCustodian']['contactPoint']['telephone'] = u'+38(101)010-10-10'
     tender_data['data']['assetCustodian']['contactPoint']['email'] = u'testprozorroyowner@gmail.com'
     for item in range(len(tender_data['data']['items'])):
-        if tender_data['data']['items'][item]['address']['region'] == u'Київ':
-            tender_data['data']['items'][item]['address']['region'] = u'місто Київ'
+        if tender_data['data']['items'][item]['address']['region'] == u'місто Київ':
+            tender_data['data']['items'][item]['address']['region'] = u'Київ'
     return tender_data
 
 
