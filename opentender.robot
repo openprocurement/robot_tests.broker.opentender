@@ -335,7 +335,7 @@ ${host}  http://test-eauction.open-tender.com.ua
 Отримати інформацію із лоту
     [Arguments]  ${username}  ${tender_uaid}  ${field}
     Run Keyword If  'title' in '${field}'  Execute Javascript  $("[data-test-id|='title']").css("text-transform", "unset")
-    Run Keyword If  '${field}' == 'status' OR 'auctionPeriod.startDate' in '${field}' Reload Page
+    Run Keyword If  '${field}' == 'status' OR 'auctionPeriod.startDate' in '${field}'  Reload Page
     ${value}=  Run Keyword If  '${field}' == 'lotCustodian.identifier.legalName'  Get Text  xpath=//div[@data-test-id="procuringEntity.name"]
     ...  ELSE IF  'lotHolder.identifier.id' in '${field}'  Get Text  //*[@data-test-id="assetHolder.identifier.id"]
     ...  ELSE IF  'lotCustodian.identifier.scheme' in '${field}'  Get Text  //*[@data-test-id='lotCustodian.identifier.scheme']
