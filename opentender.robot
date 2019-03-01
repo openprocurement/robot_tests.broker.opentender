@@ -259,7 +259,7 @@ ${host}  http://test-eauction.open-tender.com.ua
   ${decision_date}=  convert_date_for_decision  ${tender_data.data.decisions[0].decisionDate}
   Input Text   name=Lot[decisions][0][decisionDate]   ${decision_date}
   Input Text   name=Lot[decisions][0][decisionID]   ${tender_data.data.decisions[0].decisionID}
-  Execute Javascript  $("input[name='lot_procurementMethodDetails']").val('${period_intervals.lots.accelerator}');
+  Execute Javascript  $("input[name='lot_procurementMethodDetails']").val('${BROKERS.opentenderauction.intervals.lots.accelerator}');
   Click Element  name=simple_submit
   Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]  20
   ${lot_id}=  Get Text  xpath=//div[@data-test-id="lotID"]
