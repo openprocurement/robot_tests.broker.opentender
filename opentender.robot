@@ -479,7 +479,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     ...  ELSE IF  '${fieldname}' == 'minimalStep.amount'  Input Amount  name=Lot[auctions][${index}][minimalStep][amount]  ${fieldvalue}
     ...  ELSE IF  '${fieldname}' == 'guarantee.amount'  Input Amount  name=Lot[auctions][${index}][guarantee][amount]  ${fieldvalue}
     ...  ELSE IF  '${fieldname}' == 'registrationFee.amount'  Input Amount  name=Lot[auctions][${index}][registrationFee][amount]  ${fieldvalue}
-    ...  ELSE IF  '${fieldname}' == 'auctionPeriod.startDate'  Input Date Auction  name=Lot[auctions][${index}][auctionPeriod][startDate]  ${fieldvalue}.000000+03:00
+    ...  ELSE IF  '${fieldname}' == 'auctionPeriod.startDate'  Input Date Auction  name=Lot[auctions][${index}][auctionPeriod][startDate]  ${fieldvalue}
     Scroll To And Click Element  //*[@name="simple_submit"]
     Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
 
@@ -712,7 +712,7 @@ Input Amount
 
 Input Date Auction
     [Arguments]  ${locator}  ${value}
-    ${value}=  convert_date_for_auction  ${value}
+#    ${value}=  convert_date_for_auction  ${value}
     Clear Element Text  ${locator}
     Input Text  ${locator}  ${value}
 
