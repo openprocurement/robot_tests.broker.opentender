@@ -271,7 +271,6 @@ ${host}  http://test-eauction.open-tender.com.ua
   ${value_amount}=  Convert To String  ${auction.value.amount}
   ${minimalStep}=  Convert To String  ${auction.minimalStep.amount}
   ${guarantee}=  Convert To String  ${auction.guarantee.amount}
-  ${registrationFee}=  Convert To String  ${auction.registrationFee.amount}
   opentender.Пошук лоту по ідентифікатору  ${username}  ${tender_uaid}
   Click Element  xpath=//a[contains(@href, "lot/update")]
   Wait Until Element Is Visible  id=auctions-checkBox
@@ -370,7 +369,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     ...  ELSE IF  'auctionPeriod.startDate' in '${field}'  Get Text  xpath=(//div[contains(text(), "Період початку першого аукціону циклу")]/following-sibling::div)[${lot_index + 1}]
     ...  ELSE IF  'status' in '${field}'  Get Text  xpath=(//div[@data-test-id="auction.status"])[${lot_index + 1}]
     ...  ELSE IF  'tenderAttempts' in '${field}'  Get Text  xpath=(//span[@data-test-id="auction.tenderAttempts"])[${lot_index + 1}]
-    ...  ELSE IF  'registrationFee.amount' in '${field}'  Get Text  xpath=(//div[@data-test-id="auction.registrationFee.amount"])[${lot_index + 1}]
     ...  ELSE IF  'auctionID' in '${field}'  Get Text  xpath=//div[contains(text(), "Ідентифікатор аукціону")]/following-sibling::div/a
     ${value}=  adapt_lot_data  ${field}  ${value}
     [Return]  ${value}
@@ -477,7 +475,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Run Keyword If  '${fieldname}' == 'value.amount'  Input Amount  name=Lot[auctions][${index}][value][amount]  ${fieldvalue}
     ...  ELSE IF  '${fieldname}' == 'minimalStep.amount'  Input Amount  name=Lot[auctions][${index}][minimalStep][amount]  ${fieldvalue}
     ...  ELSE IF  '${fieldname}' == 'guarantee.amount'  Input Amount  name=Lot[auctions][${index}][guarantee][amount]  ${fieldvalue}
-    ...  ELSE IF  '${fieldname}' == 'registrationFee.amount'  Input Amount  name=Lot[auctions][${index}][registrationFee][amount]  ${fieldvalue}
     ...  ELSE IF  '${fieldname}' == 'auctionPeriod.startDate'  Input Date Auction  name=Lot[auctions][${index}][auctionPeriod][startDate]  ${fieldvalue}
     Scroll To And Click Element  //*[@name="simple_submit"]
     Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
