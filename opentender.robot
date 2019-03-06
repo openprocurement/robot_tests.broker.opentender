@@ -81,13 +81,11 @@ ${host}  http://test-eauction.open-tender.com.ua
     ${item_number}=  Set Variable  ${item_number.split('-')[-1]}
     Input Text  xpath=//*[@id="asset-${item_number}-description"]  ${item_data.description}
     Convert Input Data To String  xpath=//*[@id="asset-${item_number}-quantity"]  ${item_data.quantity}
-    ${classification_scheme}=  Convert To Lowercase  ${item_data.classification.scheme}
-    Select From List By Value  //div[contains(@class, "asset-item-${item_number}")]/descendant::select[@id="classification-scheme"]  ${classification_scheme}
     Click Element  xpath=//*[@id="classification-${item_number}-description"]
     Wait Until Element Is Visible  xpath=//*[@class="modal-title"]
     Input Text  xpath=//*[@placeholder="Пошук по коду"]  ${item_data.classification.id}
-    Wait Until Element Is Visible  xpath=//*[@id="${item_data.classification.id}"]
-    Scroll To And Click Element  xpath=//*[@id="${item_data.classification.id}"]
+    Wait Until Element Is Visible  xpath=//*[contains(@id,"${item_data.classification.id}")][last()]
+    Scroll To And Click Element  xpath=//*[contains(@id,"${item_data.classification.id}")][last()]
     Wait Until Element Is Enabled  xpath=//button[@id="btn-ok"]
     Click Element  xpath=//button[@id="btn-ok"]
     Wait Until Element Is Not Visible  xpath=//*[@class="fade modal"]
@@ -95,7 +93,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Select From List By Value  xpath=//*[@id="unit-${item_number}-code"]  ${item_data.unit.code}
     Select From List By Value  xpath=//*[@id="address-${item_number}-countryname"]  ${item_data.address.countryName}
     Scroll To  xpath=//*[@id="address-${item_number}-region"]
-    Select From List By Value  xpath=//*[@id="address-${item_number}-region"]  ${item_data.address.region.replace(u' область', u'').replace(u'місто Київ', u'Київ')}
+    Select From List By Label  xpath=//*[@id="address-${item_number}-region"]  ${item_data.address.region}
     Input Text  xpath=//*[@id="address-${item_number}-locality"]  ${item_data.address.locality}
     Input Text  xpath=//*[@id="address-${item_number}-streetaddress"]  ${item_data.address.streetAddress}
     Input Text  xpath=//*[@id="address-${item_number}-postalcode"]  ${item_data.address.postalCode}
@@ -261,6 +259,7 @@ ${host}  http://test-eauction.open-tender.com.ua
   ${decision_date}=  convert_date_for_decision  ${tender_data.data.decisions[0].decisionDate}
   Input Text   name=Lot[decisions][0][decisionDate]   ${decision_date}
   Input Text   name=Lot[decisions][0][decisionID]   ${tender_data.data.decisions[0].decisionID}
+  Execute Javascript  $("input[name='lot_procurementMethodDetails']").val('${period_intervals.lots.accelerator}');
   Click Element  name=simple_submit
   Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]  20
   ${lot_id}=  Get Text  xpath=//div[@data-test-id="lotID"]
@@ -297,7 +296,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Input Text  name=Lot[auctions][1][tenderingDuration]  ${duration}
     Input Text  name=Lot[auctions][2][auctionParameters][dutchSteps]  20
     Scroll To And Click Element  id=btn-submit-form
-    Wait Until Element Is Visible  xpath=//a[contains(@href, "lot/update")]
+    Wait Until Element Is Visible  xpath=//a[contains(@href, "lot/view")]
     Click Element  name=verification_submit
     Wait Until Element Is Visible  xpath=//*[@data-test-id="status"][contains(text(), "Перевірка доступності об’єкту")]
 
@@ -336,7 +335,7 @@ ${host}  http://test-eauction.open-tender.com.ua
 Отримати інформацію із лоту
     [Arguments]  ${username}  ${tender_uaid}  ${field}
     Run Keyword If  'title' in '${field}'  Execute Javascript  $("[data-test-id|='title']").css("text-transform", "unset")
-    Run Keyword If  '${field}' == 'status'  Reload Page
+    Run Keyword If  '${field}' == 'status' or 'auctionPeriod.startDate' in '${field}'  Reload Page
     ${value}=  Run Keyword If  '${field}' == 'lotCustodian.identifier.legalName'  Get Text  xpath=//div[@data-test-id="procuringEntity.name"]
     ...  ELSE IF  'lotHolder.identifier.id' in '${field}'  Get Text  //*[@data-test-id="assetHolder.identifier.id"]
     ...  ELSE IF  'lotCustodian.identifier.scheme' in '${field}'  Get Text  //*[@data-test-id='lotCustodian.identifier.scheme']
@@ -344,7 +343,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     ...  ELSE IF  'lotHolder.identifier.scheme' in '${field}'  Get Text  //*[@data-test-id="assetHolder.identifier.scheme"]
     ...  ELSE IF  'lotHolder.name' in '${field}'  Get Text  //*[@data-test-id="assetHolder.name"]
     ...  ELSE IF  '${field}' == 'status'  Get Text  xpath=//div[@data-test-id="status"]
-    ...  ELSE IF  '${field}' == 'assetID'  Get Text  xpath=//div[@data-test-id="tenderID"]
+    ...  ELSE IF  'relatedProcessID' in '${field}'  Get Element Attribute  xpath=//*[@id="asset-id"]@value
     ...  ELSE IF  '${field}' == 'description'  Get Text  xpath=//div[@data-test-id="item.description"]
     ...  ELSE IF  '${field}' == 'documents[0].documentType'  Get Text  xpath=//a[contains(@href, "info/ssp_details")]/../following-sibling::div[1]
     ...  ELSE IF  'decisions' in '${field}'  Отримати інформацію про lot decisions  ${field}
@@ -439,7 +438,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     ${last_input_number}=  Get Element Attribute  xpath=(//input[contains(@class, "document-title") and not (contains(@id, "__empty__"))])[last()]@id
     ${last_input_number}=  Set Variable  ${last_input_number.split('-')[1]}
     Input Text  xpath=(//input[@id="document-${last_input_number}-title"])[last()]  ${file_path.split('/')[-1]}
-    Select From List By Label  xpath=(//select[@id="document-${last_input_number}-level"])[last()]  Аукціон № ${new_index}
     Select From List By Value  xpath=(//select[@id="document-${last_input_number}-documenttype"])[last()]  ${doc_type}
     Scroll To And Click Element  id=btn-submit-form
     Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
@@ -480,7 +478,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     ...  ELSE IF  '${fieldname}' == 'minimalStep.amount'  Input Amount  name=Lot[auctions][${index}][minimalStep][amount]  ${fieldvalue}
     ...  ELSE IF  '${fieldname}' == 'guarantee.amount'  Input Amount  name=Lot[auctions][${index}][guarantee][amount]  ${fieldvalue}
     ...  ELSE IF  '${fieldname}' == 'registrationFee.amount'  Input Amount  name=Lot[auctions][${index}][registrationFee][amount]  ${fieldvalue}
-    ...  ELSE IF  '${fieldname}' == 'auctionPeriod.startDate'  Input Date Auction  name=Lot[auctions][${index}][auctionPeriod][startDate]  ${fieldvalue}.000000+03:00
+    ...  ELSE IF  '${fieldname}' == 'auctionPeriod.startDate'  Input Date Auction  name=Lot[auctions][${index}][auctionPeriod][startDate]  ${fieldvalue}
     Scroll To And Click Element  //*[@name="simple_submit"]
     Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
 
@@ -514,7 +512,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  id=tenderssearch-tender_cbd_id
     Input Text  id=tenderssearch-tender_cbd_id  ${tender_uaid}
     Click Element  xpath=//button[@data-test-id="search"]
-    Wait Until Keyword Succeeds  10 x  1 s  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
+    Wait Until Keyword Succeeds  15 x  1 s  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
     Wait Until Keyword Succeeds  20 x  1 s  Run Keywords
     ...  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../following-sibling::div/a
     ...  AND  Wait Until Element Is Not Visible  xpath=//button[contains(text(), "Шукати")]  5
@@ -713,7 +711,7 @@ Input Amount
 
 Input Date Auction
     [Arguments]  ${locator}  ${value}
-    ${value}=  convert_date_for_auction  ${value}
+#    ${value}=  convert_date_for_auction  ${value}
     Clear Element Text  ${locator}
     Input Text  ${locator}  ${value}
 

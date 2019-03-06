@@ -17,8 +17,8 @@ def prepare_tender_data_asset(tender_data):
     tender_data['data']['assetCustodian']['contactPoint']['telephone'] = u'+38(101)010-10-10'
     tender_data['data']['assetCustodian']['contactPoint']['email'] = u'testprozorroyowner@gmail.com'
     for item in range(len(tender_data['data']['items'])):
-        if tender_data['data']['items'][item]['address']['region'] == u'місто Київ':
-            tender_data['data']['items'][item]['address']['region'] = u'Київ'
+        if tender_data['data']['items'][item]['address']['region'] == u'Київ':
+            tender_data['data']['items'][item]['address']['region'] = u'місто Київ'
     return tender_data
 
 
@@ -79,8 +79,19 @@ def adapted_dictionary(value):
         u'Аукціон': 'active.auction',
         u'Очiкування пропозицiй': 'active.tendering',
         u'Торги не відбулися': 'unsuccessful',
+        u'Аукціон не відбувся': 'unsuccessful',
         u'Продаж завершений': 'complete',
         u'Торги скасовано': 'cancelled',
+        u'Аукціон відмінено': 'cancelled',
+        u'Квалiфiкацiя переможця': 'active.qualification',
+        u'Прийняття заяв на участь': 'active.qualification',
+        u'Очікується опублікування протоколу': 'active.qualification',
+        u'Очікується рішення': 'pending.waiting',
+        u'Очікується протокол': 'pending.waiting',
+        u'Рішення скасоване': 'unsuccessful',
+        u'Відмова від очікування': 'cancelled',
+        u'Очікується рішення про викуп': 'pending.admission',
+        u'Переможець': 'active',
         u'об’єкт реєструється': u'registering',
         u'об’єкт зареєстровано': u'complete',
         u'Об’єкт зареєстровано': u'complete',
@@ -89,10 +100,22 @@ def adapted_dictionary(value):
         u'Публікація інформаційного повідомлення': u'composing',
         u'Перевірка доступності об’єкту': u'verification',
         u'lot.status.pending.deleted': u'pending.deleted',
-        u'Лот видалено': u'deleted',
-        u'Інформація': u'informationDetails',
-        u'open_sellout.english_2': u'sellout.english',
-        u'Заплановано': u'scheduled'
+        u'Об’єкт виключено': u'deleted',
+        u'iншi': u'informationDetails',
+        u'об’єктів малої приватизації - аукціон': u'sellout.english',
+        u'Заплановано': u'scheduled',
+        u'Виконано': u'met',
+        u'Не виконано': u'notMet',
+        u'Завершений': u'terminated',
+        u'Не успішний': u'unsuccessful',
+        u'Очікується оплата.': u'active.confirmation',
+        u'Очікується оплата': u'active.payment',
+        u'Договір оплачено. Очікується наказ': u'active.approval',
+        u'Період виконання умов продажу (період оскарження)': u'active',
+        u"Приватизація об’єкта завершена.": u'pending.terminated',
+        u"Приватизація об’єкта неуспішна.": u'pending.unsuccessful',
+        u"Приватизація об’єкта завершена": u'terminated',
+        u"Приватизація об’єкта неуспішна": u'unsuccessful'
     }.get(value, value)
 
 
