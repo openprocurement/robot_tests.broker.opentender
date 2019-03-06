@@ -51,7 +51,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Click Element  xpath=//button[@data-target="#toggleRight"]
     Wait Until Element Is Visible  xpath=//nav[@id="toggleRight"]/descendant::a[contains(@href, "/assets/index")]
     Click Element  xpath=//nav[@id="toggleRight"]/descendant::a[contains(@href, "/assets/index")]
-    opentender.Закрити Модалку
     Click Element  xpath=//a[contains(@href, "/buyer/asset/create")]
     Input Text  id=asset-title  ${tender_data.data.title}
     Input Text  id=asset-description  ${tender_data.data.description}
@@ -118,7 +117,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Switch Browser  my_alias
     Go To  ${USERS.users['${username}'].homepage}
     Sleep  3
-    Закрити Модалку
     Click Element  xpath=//*[@id="h-menu"]/descendant::a[contains(@href, "assets/index")]
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Шукати")]
     Input Text  id=assetssearch-asset_cbd_id  ${tender_uaid}
@@ -127,7 +125,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Keyword Succeeds  20 x  3 s  Run Keywords
     ...  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../../div[2]/a[contains(@href, "/asset/view")]
     ...  AND  Wait Until Element Is Not Visible  xpath=//button[contains(text(), "Шукати")]  10
-    Закрити Модалку
     Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]  20
 
 Оновити сторінку з об'єктом МП
@@ -313,7 +310,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Switch Browser  my_alias
     Go To  ${USERS.users['${username}'].homepage}
     Sleep  3
-    Закрити Модалку
     Click Element  xpath=//a[contains(@href, "lots/index")][contains(text(), "Інформаційні повідомлення")]
     Wait Until Element Is Visible  xpath=//button[@data-test-id="search"]
     Input Text  id=lotssearch-lot_cbd_id  ${tender_uaid}
@@ -322,7 +318,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Keyword Succeeds  20 x  3 s  Run Keywords
     ...  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../following-sibling::div/a
     ...  AND  Wait Until Element Is Not Visible  xpath=//button[contains(text(), "Шукати")]  10
-    Закрити Модалку
     Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]  20
 
 
@@ -501,7 +496,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Switch Browser  my_alias
     Go To  ${USERS.users['${username}'].homepage}
     Sleep  3
-    Закрити Модалку
     Scroll To And Click Element  xpath=//li[@class="dropdown"]/descendant::*[@class="dropdown-toggle"][contains(@href, "tenders")]
     Click Element  xpath=//*[@class="dropdown-menu"]/descendant::*[contains(@href, "/tenders/index")]
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Шукати")]
@@ -513,7 +507,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Keyword Succeeds  20 x  1 s  Run Keywords
     ...  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../following-sibling::div/a
     ...  AND  Wait Until Element Is Not Visible  xpath=//button[contains(text(), "Шукати")]  5
-    Закрити Модалку
     Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]  20
 
 
@@ -666,7 +659,6 @@ ${host}  http://test-eauction.open-tender.com.ua
 Відповісти на запитання
     [Arguments]  ${tender_owner}  ${tender_uaid}  ${answer}  ${question_id}
     Run Keyword And Ignore Error  Click Element  xpath=//*[@data-test-id="sidebar.questions"]
-    opentender.Закрити Модалку
     Click Element  xpath=//*[@id="slidePanelToggle"]
     Input Text  //*[@data-test-id="question.title"][contains(text(), "${question_id}")]/following-sibling::form[contains(@action, "tender/questions")]/descendant::textarea  ${answer.data.answer}
     Scroll To And Click Element  xpath=//*[@data-test-id="question.title"][contains(text(), "${question_id}")]/../descendant::button[@name="answer_question_submit"]
@@ -676,7 +668,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
     Click Element  xpath=//*[@data-test-id="sidebar.questions"]
     Wait Until Element Is Not Visible  xpath=//*[@data-test-id="sidebar.questions"]
-    opentender.Закрити Модалку
     ${value}=  Get Text  //*[contains(text(), '${object_id}')]/../descendant::*[@data-test-id='question.${field}']
     [Return]  ${value}
 
