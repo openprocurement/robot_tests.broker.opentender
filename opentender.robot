@@ -64,7 +64,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Input Text  id=identifier-assetholder-id  ${tender_data.data.assetHolder.identifier.id}
     ${items_length}=  Get Length  ${items}
     :FOR  ${item}  IN RANGE  ${items_length}
-    \  Log  ${items[${item}]}
     \  Run Keyword If  ${item} > 0  Scroll To And Click Element  xpath=//button[@id="add-item"]
     \  Додати Предмет МП  ${items[${item}]}
     Select From List By Index  id=contact-point-select  1
