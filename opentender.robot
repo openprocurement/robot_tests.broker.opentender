@@ -21,7 +21,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     ...  ELSE  Open Browser  ${USERS.users['${username}'].homepage}  ${USERS.users['${username}'].browser}  alias=my_alias
     Set Window Size  ${USERS.users['${username}'].size[0]}  ${USERS.users['${username}'].size[1]}
     Run Keyword If  'Viewer' not in '${username}'  Run Keywords
-    ...  Авторизація  ${username}
+    ...  Авторизуватися  ${username}
     ...  AND  Run Keyword And Ignore Error  Закрити Модалку
 
 
@@ -31,7 +31,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     [Return]  ${tender_data}
 
 
-Авторизація
+Авторизуватися
     [Arguments]  ${username}
     Click Element  xpath=//*[contains(@href, "/login")]
     Wait Until Element Is Visible  xpath=//button[@name="login-button"]
