@@ -115,7 +115,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     [Arguments]  ${username}  ${tender_uaid}
     Switch Browser  my_alias
     Go To  ${USERS.users['${username}'].homepage}
-    Sleep  3
+    Wait Until Element Is Visible  xpath=//*[@id="h-menu"]/descendant::a[contains(@href, "assets/index")]
     Click Element  xpath=//*[@id="h-menu"]/descendant::a[contains(@href, "assets/index")]
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Шукати")]
     Input Text  id=assetssearch-asset_cbd_id  ${tender_uaid}
