@@ -171,7 +171,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Click Element  xpath=//form[@id="form-delete-asset"]/descendant::button[contains(text(), "Видалити об’єкт")]
     Wait Until Element Is Visible  //div[contains(@class,'alert-success')]
     Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
-    ...  Reload Page
+    ...  Синхронізуватися із ЦБД
     ...  AND  Wait Until Page Contains  Об’єкт виключено  10
 
 
@@ -195,7 +195,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Scroll To And Click Element  id=btn-submit-form
     Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]
     Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
-    ...  Reload Page
+    ...  Синхронізуватися із ЦБД
     ...  AND  Wait Until Page Does Not Contain   Документ завантажується...  10
 
 
@@ -423,7 +423,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Scroll To And Click Element  id=btn-submit-form
     Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
     Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
-    ...  Reload Page
+    ...  Синхронізуватися із ЦБД
     ...  AND  Wait Until Page Does Not Contain   Документ завантажується...  10
 
 
@@ -443,7 +443,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Scroll To And Click Element  id=btn-submit-form
     Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
     Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
-    ...  Reload Page
+    ...  Синхронізуватися із ЦБД
     ...  AND  Wait Until Page Does Not Contain   Документ завантажується...  10
 
 
