@@ -509,13 +509,14 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Шукати")]
     Click Element  xpath=//span[@data-target="#additional_filter"]
     Wait Until Element Is Visible  id=tenderssearch-tender_cbd_id
-    Input Text  id=tenderssearch-tender_cbd_id  ${tender_uaid}
-    Click Element  xpath=//button[@data-test-id="search"]
-    Wait Until Keyword Succeeds  15 x  1 s  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
     Wait Until Keyword Succeeds  20 x  1 s  Run Keywords
-    ...  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../following-sibling::div/a
+    ...  Input Text  id=tenderssearch-tender_cbd_id  ${tender_uaid}
+    ...  AND  Click Element  xpath=//button[@data-test-id="search"]
+    ...  AND  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
+    ...  AND  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../following-sibling::div/a
     ...  AND  Wait Until Element Is Not Visible  xpath=//button[contains(text(), "Шукати")]  5
     Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]  20
+    Синхронізуватися із ЦБД
 
 
 Оновити сторінку з тендером
