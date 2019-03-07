@@ -118,13 +118,21 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//*[@id="h-menu"]/descendant::a[contains(@href, "assets/index")]
     Click Element  xpath=//*[@id="h-menu"]/descendant::a[contains(@href, "assets/index")]
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Шукати")]
-    Input Text  id=assetssearch-asset_cbd_id  ${tender_uaid}
-    Click Element  xpath=//button[contains(text(), "Шукати")]
-    Wait Until Keyword Succeeds  10 x  1 s  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
-    Wait Until Keyword Succeeds  20 x  3 s  Run Keywords
-    ...  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../../div[2]/a[contains(@href, "/asset/view")]
+    Wait Until Keyword Succeeds  20 x  6 s  Run Keywords
+    ...  Input Text  id=assetssearch-asset_cbd_id  ${tender_uaid}
+    ...  AND  Click Element  xpath=//button[contains(text(), "Шукати")]
+    ...  AND  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
+    ...  AND  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../../div[2]/a[contains(@href, "/asset/view")]
     ...  AND  Wait Until Element Is Not Visible  xpath=//button[contains(text(), "Шукати")]  10
     Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]  20
+    Синхронізуватися із ЦБД
+
+
+Синхронізуватися із ЦБД
+    ${url}=  Get Location
+    Go To  ${url.replace('view', 'json').replace('buyer/', '').replace('seller/', '')}
+    Go To  ${url}
+
 
 Оновити сторінку з об'єктом МП
     [Arguments]  ${username}  ${tender_uaid}
