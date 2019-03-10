@@ -118,12 +118,12 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Шукати")]
     Wait Until Keyword Succeeds  20 x  6 s  Run Keywords
     ...  Input Text  id=assetssearch-asset_cbd_id  ${tender_uaid}
-    ...  AND  Execute Javascript  document.querySelectorAll(".mk-btn").forEach(el => {el.setAttribute("style", "border-radius: 0 !important") })
     ...  AND  Click Element  xpath=//button[contains(text(), "Шукати")]
     ...  AND  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
-    ...  AND  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../../div[2]/a[contains(@href, "/asset/view")]
-    ...  AND  Wait Until Page Does Not Contain Element  xpath=//button[contains(text(), "Шукати")]  10
-    ...  AND  Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]
+    Wait Until Keyword Succeeds  10 x  500 ms  Xpath Should Match X Times  //div[@class="search-result_article"]  1
+    Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../../div[2]/a[contains(@href, "/asset/view")]
+    Wait Until Page Does Not Contain Element  xpath=//button[contains(text(), "Шукати")]  10
+    Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]
     Синхронізуватися із ЦБД
 
 
@@ -317,14 +317,14 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//a[contains(@href, "lots/index")][contains(text(), "Інформаційні повідомлення")]
     Click Element  xpath=//a[contains(@href, "lots/index")][contains(text(), "Інформаційні повідомлення")]
     Wait Until Element Is Visible  xpath=//button[@data-test-id="search"]
-    Wait Until Keyword Succeeds  20 x  3 s  Run Keywords
+    Wait Until Keyword Succeeds  20 x  6 s  Run Keywords
     ...  Input Text  id=lotssearch-lot_cbd_id  ${tender_uaid}
-    ...  AND  Execute Javascript  document.querySelectorAll(".mk-btn").forEach(el => {el.setAttribute("style", "border-radius: 0 !important") })
     ...  AND  Click Element  xpath=//button[@data-test-id="search"]
     ...  AND  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
-    ...  AND  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../following-sibling::div/a
-    ...  AND  Wait Until Page Does Not Contain Element  xpath=//button[contains(text(), "Шукати")]  10
-    ...  AND  Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
+    Wait Until Keyword Succeeds  10 x  500 ms  Xpath Should Match X Times  //div[@class="search-result"]  1
+    Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../following-sibling::div/a
+    Wait Until Page Does Not Contain Element  xpath=//button[contains(text(), "Шукати")]  10
+    Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
     Синхронізуватися із ЦБД
 
 
@@ -507,14 +507,14 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Шукати")]
     Click Element  xpath=//span[@data-target="#additional_filter"]
     Wait Until Element Is Visible  id=tenderssearch-tender_cbd_id
-    Wait Until Keyword Succeeds  20 x  1 s  Run Keywords
+    Wait Until Keyword Succeeds  20 x  6 s  Run Keywords
     ...  Input Text  id=tenderssearch-tender_cbd_id  ${tender_uaid}
-    ...  AND  Execute Javascript  document.querySelectorAll(".mk-btn").forEach(el => {el.setAttribute("style", "border-radius: 0 !important") })
     ...  AND  Click Element  xpath=//button[@data-test-id="search"]
     ...  AND  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
-    ...  AND  Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../following-sibling::div/a
-    ...  AND  Wait Until Page Does Not Contain Element  xpath=//button[contains(text(), "Шукати")]  5
-    ...  AND  Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]
+    Wait Until Keyword Succeeds  10 x  500 ms  Xpath Should Match X Times  //div[@class="search-result"]  1
+    Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]/../following-sibling::div/a
+    Wait Until Page Does Not Contain Element  xpath=//button[contains(text(), "Шукати")]  5
+    Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]
     Синхронізуватися із ЦБД
 
 
