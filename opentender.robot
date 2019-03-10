@@ -98,7 +98,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Select From List By Value  id=registration-${item_number}-status  ${item_data.registrationDetails.status}
 
 
-
 Додати актив до об'єкта МП
     [Arguments]  ${username}  ${tender_uaid}  ${item_data}
     opentender.Пошук об’єкта МП по ідентифікатору  ${username}  ${tender_uaid}
@@ -108,7 +107,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Run Keyword And Ignore Error  opentender.Додати предмет МП  ${item_data}
     Run Keyword And Ignore Error  opentender.Scroll To And Click Element   id=btn-submit-form
     Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]
-
 
 
 Пошук об’єкта МП по ідентифікатору
@@ -138,6 +136,7 @@ ${host}  http://test-eauction.open-tender.com.ua
 Оновити сторінку з об'єктом МП
     [Arguments]  ${username}  ${tender_uaid}
     opentender.Пошук об’єкта МП по ідентифікатору  ${username}  ${tender_uaid}
+
 
 Внести зміни в об'єкт МП
     [Arguments]  ${username}  ${tender_uaid}  ${fieldname}  ${fieldvalue}
@@ -177,8 +176,8 @@ ${host}  http://test-eauction.open-tender.com.ua
 
 
 Завантажити ілюстрацію в об'єкт МП
-  [Arguments]  ${username}  ${tender_uaid}  ${filepath}
-  opentender.Завантажити документ в об'єкт МП з типом  ${username}  ${tender_uaid}  ${filepath}  illustration
+    [Arguments]  ${username}  ${tender_uaid}  ${filepath}
+    opentender.Завантажити документ в об'єкт МП з типом  ${username}  ${tender_uaid}  ${filepath}  illustration
 
 
 Завантажити документ в об'єкт МП з типом
@@ -197,7 +196,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//div[@data-test-id="tenderID"]
     Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
     ...  Синхронізуватися із ЦБД
-    ...  AND  Wait Until Page Does Not Contain   Документ завантажується...  10
+    ...  AND  Page Should Not Contain  Документ завантажується...
 
 
 Видалити об'єкт МП
@@ -238,60 +237,60 @@ ${host}  http://test-eauction.open-tender.com.ua
 
 
 Отримати кількість активів в об'єкті МП
-  [Arguments]  ${username}  ${tender_uaid}
-  opentender.Пошук об’єкта МП по ідентифікатору  ${username}  ${tender_uaid}
-  ${number_of_items}=  Get Matching Xpath Count  xpath=//div[@data-test-id="asset.item.description"]
-  ${number_of_items}=  Convert To Integer  ${number_of_items}
-  [Return]  ${number_of_items}
+    [Arguments]  ${username}  ${tender_uaid}
+    opentender.Пошук об’єкта МП по ідентифікатору  ${username}  ${tender_uaid}
+    ${number_of_items}=  Get Matching Xpath Count  xpath=//div[@data-test-id="asset.item.description"]
+    ${number_of_items}=  Convert To Integer  ${number_of_items}
+    [Return]  ${number_of_items}
 
 
 Отримати інформацію про decisions
-  [Arguments]  ${field}
-  ${index}=  Set Variable  ${field.split('[')[1].split(']')[0]}
-  ${index}=  Convert To Integer  ${index}
-  ${value}=  Run Keyword If  'title' in '${field}'  Get Text  xpath=(//div[@data-test-id="asset.decision.title"])["${index + 1}"]
-  ...  ELSE IF  'decisionDate' in '${field}'  Get Text  xpath=(//div[@data-test-id="asset.decision.decisionDate"])["${index + 1}"]
-  ...  ELSE IF  'decisionID' in '${field}'  Get Text  xpath=(//div[@data-test-id="asset.decision.decisionID"])["${index + 1}"]
-  [Return]  ${value}
+    [Arguments]  ${field}
+    ${index}=  Set Variable  ${field.split('[')[1].split(']')[0]}
+    ${index}=  Convert To Integer  ${index}
+    ${value}=  Run Keyword If  'title' in '${field}'  Get Text  xpath=(//div[@data-test-id="asset.decision.title"])["${index + 1}"]
+    ...  ELSE IF  'decisionDate' in '${field}'  Get Text  xpath=(//div[@data-test-id="asset.decision.decisionDate"])["${index + 1}"]
+    ...  ELSE IF  'decisionID' in '${field}'  Get Text  xpath=(//div[@data-test-id="asset.decision.decisionID"])["${index + 1}"]
+    [Return]  ${value}
 
 
 ############################################## ЛОТИ #######################################
 
 Створити лот
-  [Arguments]  ${username}  ${tender_data}  ${asset_uaid}
-  opentender.Пошук об’єкта МП по ідентифікатору  ${username}  ${asset_uaid}
-  Click Element  xpath=//a[contains(@href, "lot/create?asset")]
-  ${decision_date}=  convert_date_for_decision  ${tender_data.data.decisions[0].decisionDate}
-  Input Text   name=Lot[decisions][0][decisionDate]   ${decision_date}
-  Input Text   name=Lot[decisions][0][decisionID]   ${tender_data.data.decisions[0].decisionID}
-  Execute Javascript  $("input[name='lot_procurementMethodDetails']").val('${period_intervals.lots.accelerator}');
-  Click Element  name=simple_submit
-  Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]  20
-  ${lot_id}=  Get Text  xpath=//div[@data-test-id="lotID"]
-  [Return]  ${lot_id}
+    [Arguments]  ${username}  ${tender_data}  ${asset_uaid}
+    opentender.Пошук об’єкта МП по ідентифікатору  ${username}  ${asset_uaid}
+    Click Element  xpath=//a[contains(@href, "lot/create?asset")]
+    ${decision_date}=  convert_date_for_decision  ${tender_data.data.decisions[0].decisionDate}
+    Input Text   name=Lot[decisions][0][decisionDate]   ${decision_date}
+    Input Text   name=Lot[decisions][0][decisionID]   ${tender_data.data.decisions[0].decisionID}
+    Execute Javascript  $("input[name='lot_procurementMethodDetails']").val('${period_intervals.lots.accelerator}');
+    Click Element  name=simple_submit
+    Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]  20
+    ${lot_id}=  Get Text  xpath=//div[@data-test-id="lotID"]
+    [Return]  ${lot_id}
 
 
 Заповнити дані для першого аукціону
-  [Arguments]  ${username}  ${tender_uaid}  ${auction}
-  ${value_amount}=  Convert To String  ${auction.value.amount}
-  ${minimalStep}=  Convert To String  ${auction.minimalStep.amount}
-  ${guarantee}=  Convert To String  ${auction.guarantee.amount}
-  opentender.Пошук лоту по ідентифікатору  ${username}  ${tender_uaid}
-  Click Element  xpath=//a[contains(@href, "lot/update")]
-  Wait Until Element Is Visible  id=auctions-checkBox
-  Click Element  id=auctions-checkBox
-  Wait Until Element Is Visible  id=value-value-0-amount
-  Input Text  name=Lot[auctions][0][value][amount]  ${value_amount}
-  ${tax}=  Set Variable If  ${auction.value.valueAddedTaxIncluded}  1  0
-  Select From List By Value   name=Lot[auctions][0][value][valueAddedTaxIncluded]  ${tax}
-  Input Text  name=Lot[auctions][0][minimalStep][amount]  ${minimalStep}
-  Input Text  name=Lot[auctions][0][guarantee][amount]  ${guarantee}
-  Input Date Auction  name=Lot[auctions][0][auctionPeriod][startDate]  ${auction.auctionPeriod.startDate}
-  Input Text  name=Lot[auctions][0][bankAccount][bankName]  ${auction.bankAccount.bankName}
-  ${bank_id}=  adapt_edrpou  ${auction.bankAccount.accountIdentification[0].id}
-  Input Text  name=Lot[auctions][0][bankAccount][accountIdentification][0][id]  ${bank_id}
-  Input Text  name=Lot[auctions][0][bankAccount][accountIdentification][1][id]  123456
-  Input Text  name=Lot[auctions][0][bankAccount][accountIdentification][2][id]  1234567890
+    [Arguments]  ${username}  ${tender_uaid}  ${auction}
+    ${value_amount}=  Convert To String  ${auction.value.amount}
+    ${minimalStep}=  Convert To String  ${auction.minimalStep.amount}
+    ${guarantee}=  Convert To String  ${auction.guarantee.amount}
+    opentender.Пошук лоту по ідентифікатору  ${username}  ${tender_uaid}
+    Click Element  xpath=//a[contains(@href, "lot/update")]
+    Wait Until Element Is Visible  id=auctions-checkBox
+    Click Element  id=auctions-checkBox
+    Wait Until Element Is Visible  id=value-value-0-amount
+    Input Text  name=Lot[auctions][0][value][amount]  ${value_amount}
+    ${tax}=  Set Variable If  ${auction.value.valueAddedTaxIncluded}  1  0
+    Select From List By Value   name=Lot[auctions][0][value][valueAddedTaxIncluded]  ${tax}
+    Input Text  name=Lot[auctions][0][minimalStep][amount]  ${minimalStep}
+    Input Text  name=Lot[auctions][0][guarantee][amount]  ${guarantee}
+    Input Date Auction  name=Lot[auctions][0][auctionPeriod][startDate]  ${auction.auctionPeriod.startDate}
+    Input Text  name=Lot[auctions][0][bankAccount][bankName]  ${auction.bankAccount.bankName}
+    ${bank_id}=  adapt_edrpou  ${auction.bankAccount.accountIdentification[0].id}
+    Input Text  name=Lot[auctions][0][bankAccount][accountIdentification][0][id]  ${bank_id}
+    Input Text  name=Lot[auctions][0][bankAccount][accountIdentification][1][id]  123456
+    Input Text  name=Lot[auctions][0][bankAccount][accountIdentification][2][id]  1234567890
 
 
 Заповнити дані для другого аукціону
@@ -305,12 +304,10 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//*[@data-test-id="status"][contains(text(), "Перевірка доступності об’єкту")]
 
 
-
 Додати умови проведення аукціону
-  [Arguments]  ${username}  ${auction}  ${index}  ${tender_uaid}
-  Run Keyword If  ${index} == 0  Заповнити дані для першого аукціону  ${username}  ${tender_uaid}  ${auction}
-  ...  ELSE  Заповнити дані для другого аукціону  ${auction}
-
+    [Arguments]  ${username}  ${auction}  ${index}  ${tender_uaid}
+    Run Keyword If  ${index} == 0  Заповнити дані для першого аукціону  ${username}  ${tender_uaid}  ${auction}
+    ...  ELSE  Заповнити дані для другого аукціону  ${auction}
 
 
 Пошук лоту по ідентифікатору
@@ -379,7 +376,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     [Return]  ${value}
 
 
-
 Отримати інформацію з активу лоту
     [Arguments]  ${username}  ${tender_uaid}  ${object_id}  ${field}
     ${field}=  Set Variable If  '[' in '${field}'  ${field.split('[')[0]}${field.split(']')[1]}  ${field}
@@ -396,18 +392,18 @@ ${host}  http://test-eauction.open-tender.com.ua
 
 
 Отримати інформацію про lot decisions
-  [Arguments]  ${field}
-  ${index}=  Set Variable  ${field.split('[')[1].split(']')[0]}
-  ${index}=  Convert To Integer  ${index}
-  ${value}=  Run Keyword If  'title' in '${field}'  Get Text  xpath=(//div[@data-test-id="decision.title"])[${index + 1}]
-  ...  ELSE IF  'decisionDate' in '${field}'  Get Text  xpath=(//div[@data-test-id="decision.decisionDate"])[${index + 1}]
-  ...  ELSE IF  'decisionID' in '${field}'  Get Text  xpath=(//div[@data-test-id="decision.decisionID"])[${index + 1}]
-  [Return]  ${value}
+    [Arguments]  ${field}
+    ${index}=  Set Variable  ${field.split('[')[1].split(']')[0]}
+    ${index}=  Convert To Integer  ${index}
+    ${value}=  Run Keyword If  'title' in '${field}'  Get Text  xpath=(//div[@data-test-id="decision.title"])[${index + 1}]
+    ...  ELSE IF  'decisionDate' in '${field}'  Get Text  xpath=(//div[@data-test-id="decision.decisionDate"])[${index + 1}]
+    ...  ELSE IF  'decisionID' in '${field}'  Get Text  xpath=(//div[@data-test-id="decision.decisionID"])[${index + 1}]
+    [Return]  ${value}
 
 
 Завантажити ілюстрацію в лот
-  [Arguments]  ${username}  ${tender_uaid}  ${filepath}
-  opentender.Завантажити документ в лот з типом  ${username}  ${tender_uaid}  ${filepath}  illustration
+    [Arguments]  ${username}  ${tender_uaid}  ${filepath}
+    opentender.Завантажити документ в лот з типом  ${username}  ${tender_uaid}  ${filepath}  illustration
 
 
 Завантажити документ в лот з типом
@@ -426,7 +422,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
     Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
     ...  Синхронізуватися із ЦБД
-    ...  AND  Wait Until Page Does Not Contain   Документ завантажується...  10
+    ...  AND  Page Should Not Contain  Документ завантажується...
 
 
 Завантажити документ в умови проведення аукціону
@@ -446,7 +442,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
     Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
     ...  Синхронізуватися із ЦБД
-    ...  AND  Wait Until Page Does Not Contain   Документ завантажується...  10
+    ...  AND  Page Should Not Contain  Документ завантажується...
 
 
 Внести зміни в лот
@@ -462,14 +458,14 @@ ${host}  http://test-eauction.open-tender.com.ua
 
 
 Внести зміни в актив лоту
-  [Arguments]  ${username}  ${item_id}  ${tender_uaid}  ${field_name}  ${field_value}
-  opentender.Пошук лоту по ідентифікатору  ${username}  ${tender_uaid}
-  Click Element  xpath=//a[contains(@href, "lot/update")]
-  Wait Until Element Is Visible  id=decision-title
-  ${quantity}=  Convert To String  ${field_value}
-  Run Keyword If   '${field_name}' == 'quantity'  Input Text  xpath=//input[contains(@value, "${item_id}")]/../../following-sibling::div[2]/descendant::input[contains(@name, "quantity")]  ${quantity}
-  Scroll To And Click Element  //*[@name="simple_submit"]
-  Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
+    [Arguments]  ${username}  ${item_id}  ${tender_uaid}  ${field_name}  ${field_value}
+    opentender.Пошук лоту по ідентифікатору  ${username}  ${tender_uaid}
+    Click Element  xpath=//a[contains(@href, "lot/update")]
+    Wait Until Element Is Visible  id=decision-title
+    ${quantity}=  Convert To String  ${field_value}
+    Run Keyword If   '${field_name}' == 'quantity'  Input Text  xpath=//input[contains(@value, "${item_id}")]/../../following-sibling::div[2]/descendant::input[contains(@name, "quantity")]  ${quantity}
+    Scroll To And Click Element  //*[@name="simple_submit"]
+    Wait Until Element Is Visible  xpath=//div[@data-test-id="lotID"]
 
 
 Внести зміни в умови проведення аукціону
@@ -486,8 +482,8 @@ ${host}  http://test-eauction.open-tender.com.ua
 
 
 Завантажити документ для видалення лоту
-  [Arguments]  ${username}  ${tender_uaid}  ${file_path}
-  opentender.Завантажити документ в лот з типом  ${username}  ${tender_uaid}  ${filepath}  cancellationDetails
+    [Arguments]  ${username}  ${tender_uaid}  ${file_path}
+    opentender.Завантажити документ в лот з типом  ${username}  ${tender_uaid}  ${filepath}  cancellationDetails
 
 
 Видалити лот
@@ -547,17 +543,17 @@ ${host}  http://test-eauction.open-tender.com.ua
 
 
 Отримати інформацію із предмету
-  [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${field}
-  ${value}=  Get Text  xpath=//div[contains(text(),'${item_id}')]/ancestor::div[contains(@class, "item-inf_txt")]/descendant::*[@data-test-id="item.${field}"]
-  ${value}=  adapt_data  ${field}  ${value}
-  [Return]  ${value}
+    [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${field}
+    ${value}=  Get Text  xpath=//div[contains(text(),'${item_id}')]/ancestor::div[contains(@class, "item-inf_txt")]/descendant::*[@data-test-id="item.${field}"]
+    ${value}=  adapt_data  ${field}  ${value}
+    [Return]  ${value}
 
 
 Отримати інформацію із документа
-  [Arguments]  ${username}  ${tender_uaid}  ${doc_id}  ${field}
-  Run Keyword If   '${field}' == 'description'   Fail    ***** Опис документу скасування закупівлі не виводиться на майданчику *****
-  ${value}=   Get Text   xpath=//*[contains(text(),'${doc_id}')]
-  [Return]  ${value}
+    [Arguments]  ${username}  ${tender_uaid}  ${doc_id}  ${field}
+    Run Keyword If   '${field}' == 'description'   Fail    ***** Опис документу скасування закупівлі не виводиться на майданчику *****
+    ${value}=   Get Text   xpath=//*[contains(text(),'${doc_id}')]
+    [Return]  ${value}
 
 
 Скасувати закупівлю
