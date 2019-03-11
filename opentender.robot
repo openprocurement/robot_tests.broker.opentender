@@ -596,6 +596,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     ...  ELSE  Go To  ${host}/bids/decline/${url.split('/')[-1]}?token=465
     Go To  ${USERS.users['${username}'].homepage}
 
+
 Змінити цінову пропозицію
     [Arguments]  ${username}  ${tender_uaid}  ${field}  ${value}
     opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
@@ -603,6 +604,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Convert Input Data To String  xpath=//input[@id="value-amount"]  ${value}
     Click Element  xpath=//button[@id="submit_bid"]
     Page Should Contain Element  xpath=//*[contains(@class, "label-success")][contains(text(), "опубліковано")]
+
 
 Скасувати цінову пропозицію
     [Arguments]  ${username}  ${tender_uaid}
@@ -620,6 +622,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     ${value}=  Get Value  xpath=//input[@id="value-amount"]
     ${value}=  adapt_data  ${field}  ${value}
     [Return]  ${value}
+
 
 Завантажити документ в ставку
     [Arguments]  ${username}  ${file_path}  ${tender_uaid}
@@ -664,12 +667,14 @@ ${host}  http://test-eauction.open-tender.com.ua
     Click Element  //button[@name="question_submit"]
     Wait Until Page Contains  ${question.data.title}
 
+
 Відповісти на запитання
     [Arguments]  ${tender_owner}  ${tender_uaid}  ${answer}  ${question_id}
     Run Keyword And Ignore Error  Click Element  xpath=//*[@data-test-id="sidebar.questions"]
     Click Element  xpath=//*[@id="slidePanelToggle"]
     Input Text  //*[@data-test-id="question.title"][contains(text(), "${question_id}")]/following-sibling::form[contains(@action, "tender/questions")]/descendant::textarea  ${answer.data.answer}
     Scroll To And Click Element  xpath=//*[@data-test-id="question.title"][contains(text(), "${question_id}")]/../descendant::button[@name="answer_question_submit"]
+
 
 Отримати інформацію із запитання
     [Arguments]  ${username}  ${tender_uaid}  ${object_id}  ${field}
@@ -681,7 +686,7 @@ ${host}  http://test-eauction.open-tender.com.ua
 
 
 Отримати посилання на аукціон для учасника
-    [Arguments]  ${username}  ${tender_uaid}
+    [Arguments]  ${username}  ${tender_uaid}  ${lot_id}=${Empty}
     Switch Browser  my_alias
     opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
     Wait Until Element Is Visible  //a[@class="auction_seller_url"]
@@ -691,11 +696,174 @@ ${host}  http://test-eauction.open-tender.com.ua
     ${link}=  Execute Javascript  return window['url'];
     [Return]  ${link}
 
+
 Отримати посилання на аукціон для глядача
-    [Arguments]  ${viewer}  ${tender_uaid}
+    [Arguments]  ${viewer}  ${tender_uaid}  ${lot_id}=${Empty}
     opentender.Пошук Тендера По Ідентифікатору  ${viewer}  ${tender_uaid}
     ${link}=  Get Element Attribute  xpath=//*[contains(text(), "Посилання")]/../descendant::*[@class="h4"]/a@href
     [Return]  ${link}
+
+
+#################################### AWARDING + CONTRACTING ######################################
+
+Отримати інформацію із аварду
+    [Arguments]  ${field}
+    ${index}=  Set Variable  ${field.split('[')[1].split(']')[0]}
+    ${index}=  Convert To Integer  ${index}
+    Перейти на сторінку кваліфікації
+    Reload Page
+    ${value}=  Get Element Attribute  xpath=(//div[@data-mtitle="Статус:"]/input)[${index + 1}]@award_status
+    [Return]  ${value}
+
+
+Отримати кількість авардів в тендері
+    [Arguments]  ${username}  ${tender_uaid}
+    opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
+    Перейти на сторінку кваліфікації
+    ${awards}=  Get Matching Xpath Count  xpath=//div[contains(@class, "qtable")]/descendant::div[@data-mtitle="№"]
+    ${n_awards}=  Convert To Integer  ${awards}
+    [Return]  ${n_awards}
+
+
+Завантажити протокол погодження в авард
+    [Arguments]  ${username}  ${tender_uaid}  ${file_path}  ${award_index}
+    opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
+    Перейти на сторінку кваліфікації
+    Wait Until Element Is Visible  xpath=//button[contains(text(), "Опублікувати рішення про викуп")]
+    Click Element  xpath=//button[contains(text(), "Опублікувати рішення про викуп")]
+    Wait Until Element Is Visible  xpath=//div[contains(text(), "Опублікувати рішення про викуп")]
+    Choose File  xpath=//div[@id="admission-form-upload-file"]/descendant::input[@name="FileUpload[file][]"]  ${file_path}
+    Wait Until Element Is Visible  xpath=//button[contains(@class, "delete-file-verification")]
+
+
+Активувати кваліфікацію учасника
+    [Arguments]  ${username}  ${tender_uaid}
+    Click Element  xpath=//button[@name="admission"]
+    Wait Until Element Is Not Visible  xpath=//button[@name="admission"]
+    Wait Until Keyword Succeeds  30 x  20 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Page Should Not Contain Element  xpath=//button[@onclick="window.location.reload();"]
+
+
+Завантажити протокол аукціону в авард
+    [Arguments]  ${username}  ${tender_uaid}  ${file_path}  ${award_index}
+    opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
+    Перейти на сторінку кваліфікації
+    Wait Until Element Is Visible  xpath=//button[contains(text(), "Завантаження протоколу")]
+    Click Element  xpath=//button[contains(text(), "Завантаження протоколу")]
+    Wait Until Element Is Visible  xpath=//div[contains(text(), "Завантаження протоколу")]
+    Choose File  xpath=//div[@id="verification-form-upload-file"]/descendant::input[@name="FileUpload[file][]"]  ${file_path}
+    Wait Until Element Is Visible  xpath=//button[contains(@class, "delete-file-verification")]
+    Click Element  xpath=//button[@name="protokol_ok"]
+    Wait Until Element Is Not Visible  xpath=//button[@name="protokol_ok"]
+    Wait Until Keyword Succeeds  30 x  20 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Page Should Not Contain Element  xpath=//button[@onclick="window.location.reload();"]
+
+
+Підтвердити постачальника
+    [Arguments]  ${username}  ${tender_uaid}  ${number}
+    Log  Необхідні дії було виконано у "Завантажити протокол аукціону в авард"
+
+
+Завантажити протокол дискваліфікації в авард
+    [Arguments]  ${username}  ${tender_uaid}  ${file_path}  ${award_index}
+    opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
+    Перейти на сторінку кваліфікації
+    Wait Until Element Is Visible  xpath=//button[@data-toggle="modal"][contains(text(), "Дисквалiфiкувати")]
+    Click Element  xpath=//button[@data-toggle="modal"][contains(text(), "Дисквалiфiкувати")]
+    Wait Until Element Is Visible  xpath=//div[contains(@class, "h2")][contains(text(), "Дискваліфікація")]
+    Wait Until Element Is Visible  xpath=(//*[@name="Award[cause][]"])[1]/..
+    Click Element  xpath=(//*[@name="Award[cause][]"])[1]/..
+    Choose File  xpath=//div[@id="disqualification-form-upload-file"]/descendant::input[@name="FileUpload[file][]"]  ${file_path}
+    Wait Until Element Is Visible  xpath=//button[contains(@class, "delete-file-verification")]
+
+
+Дискваліфікувати постачальника
+    [Arguments]  ${username}  ${tender_uaid}  ${number}  ${description}
+    Input Text  //textarea[@id="award-description"]  ${description}
+    Click Element  xpath=//button[@id="disqualification"]
+    Wait Until Element Is Not Visible  xpath=//button[@id="disqualification"]
+    Wait Until Keyword Succeeds  30 x  20 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Page Should Not Contain Element  xpath=//button[@onclick="window.location.reload();"]
+
+
+Скасування рішення кваліфікаційної комісії
+    [Arguments]  ${username}  ${tender_uaid}  ${number}
+    opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
+    Перейти на сторінку кваліфікації
+    Wait Until Element Is Visible  //button[contains(text(), "Забрати гарантійний внесок")]
+    Click Element  //button[contains(text(), "Забрати гарантійний внесок")]
+    Wait Until Element Is Visible  //div[contains(text(), "Подальшу участь буде скасовано")]
+    Click Element  //*[@class="modal-footer"]/button[contains(text(), "Застосувати")]
+    Wait Until Element Is Not Visible  //*[@class="modal-footer"]/button[contains(text(), "Застосувати")]
+    Wait Until Keyword Succeeds  30 x  20 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Wait Until Page Contains  Рiшення скасовано
+
+
+Завантажити протокол скасування в контракт
+    [Arguments]  ${username}  ${tender_uaid}  ${file_path}  ${award_index}
+    opentender.Завантажити протокол дискваліфікації в авард  ${username}  ${tender_uaid}  ${file_path}  ${award_index}
+
+
+Скасувати контракт
+    [Arguments]  ${username}  ${tender_uaid}  ${number}
+    Click Element  xpath=//button[@id="disqualification"]
+    Wait Until Element Is Not Visible  xpath=//button[@id="disqualification"]
+    Wait Until Keyword Succeeds  30 x  20 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Page Should Not Contain Element  xpath=//button[@onclick="window.location.reload();"]
+
+
+Встановити дату підписання угоди
+    [Arguments]  ${username}  ${tender_uaid}  ${index}  ${date}
+    opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
+    Перейти на сторінку кваліфікації
+    Wait Until Element Is Visible  xpath=//button[contains(text(), "Договір")]
+    Click Element  xpath=//button[contains(text(), "Договір")]
+    Wait Until Element Is Visible  xpath=//div[contains(@class, "h2")][contains(text(), "Договір")]
+    Input Date Auction  name=Contract[dateSigned]  ${date}
+    Click Element  xpath=//button[@id="contract-fill-data"]
+    Wait Until Element Is Not Visible  xpath=//button[@id="contract-fill-data"]
+
+
+Завантажити угоду до тендера
+    [Arguments]  ${username}  ${tender_uaid}  ${number}  ${file_path}
+    opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
+    Перейти на сторінку кваліфікації
+    Wait Until Element Is Visible  xpath=//button[contains(text(), "Договір")]
+    Click Element  xpath=//button[contains(text(), "Договір")]
+    Wait Until Element Is Visible  //div[contains(@class, "h2")][contains(text(), "Договір")]
+    Choose File  xpath=//div[@id="uploadcontract"]/descendant::input  ${file_path}
+    Input Text  xpath=//input[@id="contract-contractnumber"]  1234567890
+    Click Element  xpath=//button[@id="contract-fill-data"]
+    Wait Until Element Is Not Visible  xpath=//button[@id="contract-fill-data"]
+    Wait Until Keyword Succeeds  30 x  20 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Page Should Contain Element  xpath=//input[@id="contract-activate"]
+
+
+Підтвердити підписання контракту
+    [Arguments]  ${username}  ${tender_uaid}  ${number}
+    opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
+    Перейти на сторінку кваліфікації
+    Click Element  xpath=//input[@id="contract-activate"]
+    Wait Until Element Is Visible  xpath=//h4[contains(text(), "Активація контракту")]
+    Click Element  xpath=//button[@data-bb-handler="confirm"]
+    Wait Until Keyword Succeeds  10 x  5 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Page Should Contain Element  xpath=//div[@data-test-id="status"][contains(text(), "Аукціон відбувся (або 1 учасник)")]
+
+
+Перейти на сторінку кваліфікації
+    ${status_q}=  Run Keyword And Return Status  Page Should Contain Element  xpath=//a[contains(text(), "Таблиця квалiфiкацiї")]  3
+    ${status_p}=  Run Keyword And Return Status  Page Should Contain Element  xpath=//a[contains(text(), "Протокол розкриття пропозицiй")]  2
+    Run Keyword If  ${status_q}  Click Element  xpath=//a[contains(text(), "Таблиця квалiфiкацiї")]
+    ...  ELSE IF  ${status_p}  Click Element  xpath=//a[contains(text(), "Протокол розкриття пропозицiй")]
+    Закрити Модалку
+    Wait Until Element Is Visible  xpath=//h1[contains(text(), "Квалiфiкацiя учасникiв")]
 
 ##################################################################################
 Input Amount
@@ -744,6 +912,7 @@ Convert Input Data To String
     [Arguments]  ${locator}  ${value}
     ${value}=  Convert To String  ${value}
     Input Text  ${locator}  ${value}
+
 
 JQuery Ajax Should Complete
     ${active}=  Execute Javascript  return jQuery.active
