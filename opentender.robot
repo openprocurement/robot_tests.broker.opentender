@@ -5,6 +5,7 @@ Library  Collections
 Library  String
 Library  DateTime
 Library  opentender_service.py
+Library  op_robot_tests.tests_files.service_keywords
 
 *** Variables ***
 ${host}  http://test-eauction.open-tender.com.ua
@@ -91,6 +92,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Select From List By Value  xpath=//*[@id="unit-${item_number}-code"]  ${item_data.unit.code}
     Select From List By Value  xpath=//*[@id="address-${item_number}-countryname"]  ${item_data.address.countryName}
     Scroll To  xpath=//*[@id="address-${item_number}-region"]
+    Wait Until Page Contains Element  xpath=//*[@id="address-${item_number}-region"]/option[text()='місто Київ']
     Select From List By Label  xpath=//*[@id="address-${item_number}-region"]  ${item_data.address.region}
     Input Text  xpath=//*[@id="address-${item_number}-locality"]  ${item_data.address.locality}
     Input Text  xpath=//*[@id="address-${item_number}-streetaddress"]  ${item_data.address.streetAddress}
@@ -116,7 +118,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//*[@id="h-menu"]/descendant::a[contains(@href, "assets/index")]
     Click Element  xpath=//*[@id="h-menu"]/descendant::a[contains(@href, "assets/index")]
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Шукати")]
-    Wait Until Keyword Succeeds  20 x  6 s  Run Keywords
+    Wait Until Keyword Succeeds  40 x  5 s  Run Keywords
     ...  Input Text  id=assetssearch-asset_cbd_id  ${tender_uaid}
     ...  AND  Click Element  xpath=//button[contains(text(), "Шукати")]
     ...  AND  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
@@ -317,7 +319,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//a[contains(@href, "lots/index")][contains(text(), "Інформаційні повідомлення")]
     Click Element  xpath=//a[contains(@href, "lots/index")][contains(text(), "Інформаційні повідомлення")]
     Wait Until Element Is Visible  xpath=//button[@data-test-id="search"]
-    Wait Until Keyword Succeeds  20 x  6 s  Run Keywords
+    Wait Until Keyword Succeeds  40 x  5 s  Run Keywords
     ...  Input Text  id=lotssearch-lot_cbd_id  ${tender_uaid}
     ...  AND  Click Element  xpath=//button[@data-test-id="search"]
     ...  AND  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
@@ -507,7 +509,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Шукати")]
     Click Element  xpath=//span[@data-target="#additional_filter"]
     Wait Until Element Is Visible  id=tenderssearch-tender_cbd_id
-    Wait Until Keyword Succeeds  20 x  6 s  Run Keywords
+    Wait Until Keyword Succeeds  40 x  5 s  Run Keywords
     ...  Input Text  id=tenderssearch-tender_cbd_id  ${tender_uaid}
     ...  AND  Click Element  xpath=//button[@data-test-id="search"]
     ...  AND  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${tender_uaid}")]
@@ -531,9 +533,11 @@ ${host}  http://test-eauction.open-tender.com.ua
 
 Отримати інформацію із тендера
     [Arguments]  ${username}  ${tender_uaid}  ${field}
+    Синхронізуватися із ЦБД
     Run Keyword If  'title' in '${field}'  Execute Javascript  $("[data-test-id|='title']").css("text-transform", "unset")
     Run Keyword If  '${field}' == 'status'  Reload Page
     ${value}=  Run Keyword If  'auctionID' in '${field}'  Get Text  xpath=//div[@data-test-id="tenderID"]
+    ...  ELSE IF  'awards' in '${field}'  Отримати інформацію із аварду  ${field}
     ...  ELSE IF  'guarantee' in '${field}'  Get Text  xpath=//div[@data-test-id="guarantee"]
     ...  ELSE IF  '${field}' == 'cancellations[0].reason'  Get Text  xpath=//*[@data-test-id="${field.replace('[0]','')}"]
     ...  ELSE IF  '${field}' == 'cancellations[0].status'  Get Element Attribute  xpath=//*[contains(text(), "Причина скасування")]@data-test-id-cancellation-status
@@ -791,6 +795,7 @@ ${host}  http://test-eauction.open-tender.com.ua
 
 Скасування рішення кваліфікаційної комісії
     [Arguments]  ${username}  ${tender_uaid}  ${number}
+    ${award_status}=  Set Variable If  '${ROLE}' == 'tender_owner'  Рiшення скасовано  Відмова від очікування
     opentender.Пошук Тендера По Ідентифікатору  ${username}  ${tender_uaid}
     Перейти на сторінку кваліфікації
     Wait Until Element Is Visible  //button[contains(text(), "Забрати гарантійний внесок")]
@@ -800,7 +805,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Not Visible  //*[@class="modal-footer"]/button[contains(text(), "Застосувати")]
     Wait Until Keyword Succeeds  30 x  20 s  Run Keywords
     ...  Reload Page
-    ...  AND  Wait Until Page Contains  Рiшення скасовано
+    ...  AND  Wait Until Page Contains  ${award_status}
 
 
 Завантажити протокол скасування в контракт
@@ -865,6 +870,167 @@ ${host}  http://test-eauction.open-tender.com.ua
     Закрити Модалку
     Wait Until Element Is Visible  xpath=//h1[contains(text(), "Квалiфiкацiя учасникiв")]
 
+
+Отримати інформацію з активу в договорі
+    [Arguments]  ${username}  ${contract_uaid}  ${item_id}  ${field_name}
+    opentender.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+    ${value}=  opentender.Отримати інформацію із предмету  ${username}  ${contract_uaid}  ${item_id}  ${field_name}
+    [Return]  ${value}
+
+
+Пошук договору по ідентифікатору
+    [Arguments]  ${username}  ${contract_uaid}
+    Switch Browser  my_alias
+    Go To  ${USERS.users['${username}'].homepage}
+    Wait Until Element Is Visible  xpath=//a[@class="dropdown-toggle"][contains(text(),"м.Приватизація")]
+    Click Element  xpath=//a[@class="dropdown-toggle"][contains(text(),"м.Приватизація")]
+    Wait Until Element Is Visible  xpath=//*[@id="h-menu"]/descendant::a[contains(@href, "contracting")]
+    Click Element  xpath=//*[@id="h-menu"]/descendant::a[contains(@href, "contracting")]
+    Wait Until Element Is Visible  xpath=//button[contains(text(), "Шукати")]
+    Wait Until Keyword Succeeds  40 x  5 s  Run Keywords
+    ...  Input Text  id=contractingsearch-contract_cbd_id  ${contract_uaid}
+    ...  AND  Click Element  xpath=//button[contains(text(), "Шукати")]
+    ...  AND  Wait Until Element Is Visible  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${contract_uaid}")]
+    Wait Until Keyword Succeeds  10 x  500 ms  Xpath Should Match X Times  //div[@class="search-result_article"]  1
+    Click Element  xpath=//div[@class="search-result"]/descendant::div[contains(text(), "${contract_uaid}")]/../../div[2]/a[contains(@href, "/contracting/view")]
+    Wait Until Page Does Not Contain Element  xpath=//button[contains(text(), "Шукати")]  10
+    Wait Until Element Is Visible  xpath=//div[@data-test-id="contractID"]
+    Синхронізуватися із ЦБД
+
+
+Отримати інформацію із договору
+    [Arguments]  ${username}  ${contract_uaid}  ${field}
+    opentender.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+    ${value}=  Get Text  xpath=//div[@data-test-id="${field}"]
+    ${value}=  adapted_dictionary  ${value}
+    [Return]  ${value}
+
+
+Активувати контракт
+    [Arguments]  ${username}  ${contract_uaid}
+    Wait Until Keyword Succeeds  20 x  6 s  Run Keywords
+    ...  opentender.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+    ...  AND  Page Should Contain Element  xpath=//div[@data-test-id="status" and contains(text(), "Очікується оплата ")]
+
+
+Вказати дату отримання оплати
+    [Arguments]  ${username}  ${contract_uaid}  ${dateMet}  ${index}
+    opentender.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+    Click Element  xpath=//button[@class="mk-btn mk-btn_default"][contains(text(), "Оплата договору")]
+    Wait Until Keyword Succeeds  10 x  1 s  Wait Until Element Is Visible  xpath=//div[@class="h2 text-center"][contains(text(), "Оплата договору")]
+    Click Element  xpath=//select[@id="milestone-status"]
+    ${date_paid}=  convert_date_for_date_paid  ${dateMet}
+    Wait Element Animation  xpath=//input[@name="Milestone[dateMet]"]
+    Focus  xpath=//input[@name="Milestone[dateMet]"]
+    Clear Element Text	xpath=//input[@name="Milestone[dateMet]"]
+#    Input Text  xpath=//input[@name="Milestone[dateMet]"]  ${date_paid}
+    Execute Javascript  $("[name='Milestone[dateMet]']")[0].value = "${date_paid}"
+    Sleep  3
+    Click Element  xpath=//button[@class="mk-btn mk-btn_accept"][contains(text(),"Завантажити дані")]
+    Wait Until Element Is Not Visible  xpath=//*[contains(@class, "modal-backdrop")]
+
+
+Підтвердити відсутність оплати
+    [Arguments]  ${username}  ${contract_uaid}  ${index}
+    opentender.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+    Click Element  xpath=//button[@class="mk-btn mk-btn_default"][contains(text(), "Оплата договору")]
+    Wait Until Keyword Succeeds  10 x  1 s  Wait Until Element Is Visible  xpath=//div[@class="h2 text-center"][contains(text(), "Оплата договору")]
+    Select From List By Value  xpath=//select[@id="milestone-status"]  notMet
+    Click Element  xpath=//button[@class="mk-btn mk-btn_accept"][contains(text(),"Завантажити дані")]
+    Wait Until Element Is Not Visible  xpath=//*[contains(@class, "modal-backdrop")]
+
+
+Завантажити наказ про завершення приватизації
+    [Arguments]  ${username}  ${contract_uaid}  ${file_path}
+    opentender.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+    Click Element  xpath=//button[contains(text(), 'Наказ про завершення')]
+    Wait Until Keyword Succeeds  10 x  1 s  Wait Until Element Is Visible  xpath=//button[contains(text(), 'Завантажити дані')]
+    Click Element  xpath=//div[contains(text(), 'Додати документ')]
+    Choose File  xpath=//input[contains(@id,"ajax-upload-id")]  ${file_path}
+    Wait Until Element Is Visible  xpath=//select[@id="document-0-documenttype"]
+    Select From List By Value  xpath=//select[@id="document-0-documenttype"]  approvalProtocol
+#    Click Element  xpath=//button[@class="mk-btn mk-btn_accept"]
+
+
+Вказати дату прийняття наказу
+    [Arguments]  ${username}  ${contract_uaid}  ${dateMet}
+    opentender.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+    ${file_path}  ${file_name}  ${file_content}=  create_fake_doc
+    Click Element  xpath=//button[contains(text(), 'Наказ про завершення приватизації')]
+    Wait Until Keyword Succeeds  10 x  1 s  Wait Until Element Is Visible  xpath=//button[contains(text(), 'Завантажити дані')]
+    Click Element  xpath=//div[contains(text(), 'Додати документ')]
+    Choose File  xpath=//input[contains(@id,"ajax-upload-id")]  ${file_path}
+    Wait Until Page Contains Element  //select[@id="document-0-documenttype"] /option[contains(text(),"Наказ про завершення приватизації об’єкта")]
+    Select From List By Value  xpath=//select[@id="document-0-documenttype"]  approvalProtocol
+    ${date_nakaz}  convert_date_for_date_paid  ${dateMet}
+#    Input Text  xpath=//input[@name="Milestone[dateMet]"]  ${date_nakaz}
+    Execute Javascript  $("[name='Milestone[dateMet]']")[0].value = "${date_nakaz}"
+    Click Element  xpath=//button[@class="mk-btn mk-btn_accept"]
+    Wait Until Element Is Not Visible  xpath=//*[contains(@class, "modal-backdrop")]
+    Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Wait Until Page Does Not Contain   Документ завантажується...  10
+    Remove File ${file_path}
+
+
+Підтвердити відсутність наказу про приватизацію
+    [Arguments]  ${username}  ${contract_uaid}  ${file_path}
+    opentender.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+    Click Element  xpath=//button[contains(text(), 'Наказ про завершення приватизації')]
+    Wait Until Keyword Succeeds  10 x  1 s  Wait Until Element Is Visible  xpath=//button[contains(text(), 'Завантажити дані')]
+    Click Element  xpath=//div[contains(text(), 'Додати документ')]
+    Choose File  xpath=//input[contains(@id,"ajax-upload-id")]  ${file_path}
+    Wait Until Element Is Visible  xpath=//select[@class="document-type"][@id="document-0-documenttype"]
+    Select From List By Value  xpath=//select[@id="document-0-documenttype"]  rejectionProtocol
+    Select From List By Value  xpath=//select[@id="milestone-status"]  notMet
+    Click Element  xpath=//button[@class="mk-btn mk-btn_accept"]
+    Wait Until Element Is Not Visible  xpath=//*[contains(@class, "modal-backdrop")]
+    Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Wait Until Page Does Not Contain   Документ завантажується...  10
+
+
+Вказати дату виконання умов контракту
+    [Arguments]  ${username}  ${contract_uaid}  ${dateMet}
+    opentender.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+    ${file_path}  ${file_name}  ${file_content}=  create_fake_doc
+    Click Element  xpath=//button[contains(text(), 'Виконання умов продажу')]
+    Wait Until Element Is Visible  xpath=//div[contains(text(), 'Додати документ')]
+    Click Element  xpath=//div[contains(text(), 'Додати документ')]
+    Choose File  xpath=//input[contains(@id,"ajax-upload-id")]  ${file_path}
+    Wait Until Page Contains Element  //select[@id="document-0-documenttype"] /option[contains(text(),"Документи, що підтверджують виконання умов продажу")]
+    Select From List By Value  xpath=//select[@id="document-0-documenttype"]  contractNotice
+    ${date_paid}=  convert_date_for_date_paid  ${dateMet}
+#    Input Text  xpath=//input[@name="Milestone[dateMet]"]  ${date_paid}
+    Execute Javascript  $("[name='Milestone[dateMet]']")[0].value = "${date_paid}"
+    Click Element  xpath=//button[@class="mk-btn mk-btn_accept"][contains(text(),"Завантажити дані")]
+    Wait Until Element Is Not Visible  xpath=//*[contains(@class, "modal-backdrop")]
+    Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Wait Until Page Does Not Contain   Документ завантажується...  10
+    Remove File ${file_path}
+
+
+Підтвердити невиконання умов приватизації
+    [Arguments]  ${username}  ${contract_uaid}
+    opentender.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+    ${file_path}  ${file_name}  ${file_content}=  create_fake_doc
+    Click Element  xpath=//button[contains(text(), 'Виконання умов продажу')]
+    Wait Until Keyword Succeeds  10 x  1 s  Wait Until Element Is Visible  xpath=//button[contains(text(), 'Завантажити дані')]
+    Click Element  xpath=//div[contains(text(), 'Додати документ')]
+    Choose File  xpath=//input[contains(@id,"ajax-upload-id")]  ${file_path}
+    Wait Until Element Is Visible  xpath=//select[@class="document-type"][@id="document-0-documenttype"]
+    Select From List By Value  xpath=//select[@id="document-0-documenttype"]  rejectionProtocol
+    Select From List By Value  xpath=//select[@id="milestone-status"]  notMet
+    Click Element  xpath=//button[@class="mk-btn mk-btn_accept"]
+    Wait Until Element Is Not Visible  xpath=//*[contains(@class, "modal-backdrop")]
+    Wait Until Keyword Succeeds  30 x  10 s  Run Keywords
+    ...  Reload Page
+    ...  AND  Wait Until Page Does Not Contain   Документ завантажується...  10
+    Remove File ${file_path}
+
+
+
 ##################################################################################
 Input Amount
     [Arguments]  ${locator}  ${value}
@@ -875,9 +1041,9 @@ Input Amount
 
 Input Date Auction
     [Arguments]  ${locator}  ${value}
-#    ${value}=  convert_date_for_auction  ${value}
+    ${value}=  convert_date_for_auction  ${value}
     Clear Element Text  ${locator}
-    Input Text  ${locator}  ${value}
+    Execute Javascript  document.querySelector('[${locator.split("=")[0]}="${locator.split("=")[1]}"]').value = "${value}"
 
 
 Отримати документ
@@ -917,3 +1083,17 @@ Convert Input Data To String
 JQuery Ajax Should Complete
     ${active}=  Execute Javascript  return jQuery.active
     Should Be Equal  "${active}"  "0"
+
+
+Wait Element Animation
+    [Arguments]  ${locator}
+    Set Test Variable  ${prev_vert_pos}  0
+    Wait Until Keyword Succeeds  20 x  500 ms  Position Should Equals  ${locator}
+
+
+Position Should Equals
+    [Arguments]  ${locator}
+    ${current_vert_pos}=  Get Vertical Position  ${locator}
+    ${status}=  Run Keyword And Return Status  Should Be Equal  ${prev_vert_pos}  ${current_vert_pos}
+    Set Test Variable  ${prev_vert_pos}  ${current_vert_pos}
+    Should Be True  ${status}

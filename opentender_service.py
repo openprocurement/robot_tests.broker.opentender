@@ -4,6 +4,7 @@ from datetime import datetime
 import pytz
 import urllib
 import re
+import os
 
 
 tz = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
@@ -46,6 +47,11 @@ def convert_date_for_item(date):
     return '{}'.format(date)
 
 
+def convert_date_for_date_paid(date):
+    date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S').strftime('%d.%m.%Y %H:%M')
+    return date
+
+
 def convert_date_for_auction(date):
     date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(tz)).strftime('%d/%m/%Y %H:%M:%S')
     return '{}'.format(date)
@@ -80,7 +86,7 @@ def adapted_dictionary(value):
         u'Очiкування пропозицiй': 'active.tendering',
         u'Торги не відбулися': 'unsuccessful',
         u'Аукціон не відбувся': 'unsuccessful',
-        u'Продаж завершений': 'complete',
+        u'Аукціон відбувся (або 1 учасник)': 'complete',
         u'Торги скасовано': 'cancelled',
         u'Аукціон відмінено': 'cancelled',
         u'Квалiфiкацiя переможця': 'active.qualification',
