@@ -34,7 +34,7 @@ def convert_date_from_item(date):
     return '{}T00:00:00{}'.format(date, tz)
 
 
-def convert_date(date):
+def convert_date_view(date):
     if '.' in date:
         date = datetime.strptime(date, '%d.%m.%Y %H:%M:%S').strftime('%Y-%m-%dT%H:%M:%S.%f')
     else:
@@ -42,19 +42,19 @@ def convert_date(date):
     return '{}{}'.format(date, tz)
 
 
-def convert_date_for_item(date):
-    date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S{}'.format(tz)).strftime('%d/%m/%Y %H:%M')
-    return '{}'.format(date)
+# def convert_date_for_item(date):
+#     date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S{}'.format(tz)).strftime('%d/%m/%Y %H:%M')
+#     return '{}'.format(date)
+
+#
+# def convert_date_for_date_paid(date):
+#     date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S').strftime('%d.%m.%Y %H:%M')
+#     return date
 
 
-def convert_date_for_date_paid(date):
-    date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S').strftime('%d.%m.%Y %H:%M')
-    return date
-
-
-def convert_date_for_auction(date):
-    date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(tz)).strftime('%d/%m/%Y %H:%M:%S')
-    return '{}'.format(date)
+# def convert_date_for_auction(date):
+#     date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(tz)).strftime('%d/%m/%Y %H:%M:%S')
+#     return '{}'.format(date)
 
 
 def convert_date_from_decision(date):
@@ -62,9 +62,9 @@ def convert_date_from_decision(date):
     return '{}{}'.format(date, tz)
 
 
-def convert_date_for_decision(date):
-    date = datetime.strptime(date, '%Y-%m-%d'.format(tz)).strftime('%d/%m/%Y')
-    return '{}'.format(date)
+# def convert_date_for_decision(date):
+#     date = datetime.strptime(date, '%Y-%m-%d'.format(tz)).strftime('%d/%m/%Y')
+#     return '{}'.format(date)
 
 
 def convert_duration(duration):
@@ -143,7 +143,7 @@ def adapt_data(field, value):
     elif 'contractPeriod' in field:
         value = convert_date_from_item(value)
     elif 'tenderPeriod' in field or 'auctionPeriod' in field or 'rectificationPeriod' in field and 'invalidationDate' not in field:
-        value = convert_date(value)
+        value = convert_date_view(value)
     else:
         value = adapted_dictionary(value)
     return value
@@ -151,13 +151,13 @@ def adapt_data(field, value):
 
 def adapt_asset_data(field, value):
     if 'date' in field:
-        value = convert_date(value)
+        value = convert_date_view(value)
     elif 'decisionDate' in field:
         value = convert_date_from_decision(value.split(' ')[0])
     elif 'documentType' in field:
         value = adapted_dictionary(value.split(' ')[0])
     elif 'rectificationPeriod.endDate' in field:
-        value = convert_date(value)
+        value = convert_date_view(value)
     elif 'documentType' in field:
         value = value
     else:
@@ -175,7 +175,7 @@ def adapt_lot_data(field, value):
         else:
             value = 'P{}D'.format(value)
     elif 'auctionPeriod.startDate' in field:
-        value = convert_date(value)
+        value = convert_date_view(value)
     elif 'classification.id' in field:
         value = value.split(' - ')[0]
     elif 'unit.name' in field:
