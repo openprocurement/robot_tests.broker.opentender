@@ -4,7 +4,6 @@ from datetime import datetime
 import pytz
 import urllib
 import re
-import os
 
 
 tz = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
@@ -42,29 +41,9 @@ def convert_date_view(date):
     return '{}{}'.format(date, tz)
 
 
-# def convert_date_for_item(date):
-#     date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S{}'.format(tz)).strftime('%d/%m/%Y %H:%M')
-#     return '{}'.format(date)
-
-#
-# def convert_date_for_date_paid(date):
-#     date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S').strftime('%d.%m.%Y %H:%M')
-#     return date
-
-
-# def convert_date_for_auction(date):
-#     date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(tz)).strftime('%d/%m/%Y %H:%M:%S')
-#     return '{}'.format(date)
-
-
 def convert_date_from_decision(date):
     date = datetime.strptime(date, '%d/%m/%Y'.format(tz)).strftime('%Y-%m-%dT%H:%M:%S.%f')
     return '{}{}'.format(date, tz)
-
-
-# def convert_date_for_decision(date):
-#     date = datetime.strptime(date, '%Y-%m-%d'.format(tz)).strftime('%d/%m/%Y')
-#     return '{}'.format(date)
 
 
 def convert_duration(duration):

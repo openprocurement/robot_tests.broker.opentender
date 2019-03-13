@@ -57,7 +57,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Input Text  id=asset-description  ${tender_data.data.description}
     Input Text  id=decision-0-title  ${decisions[0].title}
     Input Text  id=decision-0-decisionid  ${decisions[0].decisionID}
-#    ${decision_date}=  convert_date_for_decision  ${decisions[0].decisionDate}
     ${decision_date}=  Convert Date  ${decisions[0].decisionDate}  date_format=%Y-%m-%d  result_format=%d/%m/%Y
     Input Text  id=decision-0-decisiondate  ${decision_date}
     Click Element  id=assetHolder-checkBox
@@ -264,7 +263,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     [Arguments]  ${username}  ${tender_data}  ${asset_uaid}
     opentender.Пошук об’єкта МП по ідентифікатору  ${username}  ${asset_uaid}
     Click Element  xpath=//a[contains(@href, "lot/create?asset")]
-#    ${decision_date}=  convert_date_for_decision  ${tender_data.data.decisions[0].decisionDate}
     ${decision_date}=  Convert Date  ${tender_data.data.decisions[0].decisionDate}  date_format=%Y-%m-%d  result_format=%d/%m/%Y
     Input Text   name=Lot[decisions][0][decisionDate]   ${decision_date}
     Input Text   name=Lot[decisions][0][decisionID]   ${tender_data.data.decisions[0].decisionID}
@@ -833,9 +831,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Договір")]
     Click Element  xpath=//button[contains(text(), "Договір")]
     Wait Element Animation  name=Contract[dateSigned]
-#    Wait Until Element Is Visible  xpath=//div[contains(@class, "h2")][contains(text(), "Договір")]
-#    Input Date Auction  name=Contract[dateSigned]  ${date}
-
     Clear Element Text  name=Contract[dateSigned]
     Execute Javascript  document.querySelector('[name="Contract[dateSigned]"]').value = "${date}"
     Click Element  xpath=//button[@id="contract-fill-data"]
@@ -927,12 +922,10 @@ ${host}  http://test-eauction.open-tender.com.ua
     Click Element  xpath=//button[@class="mk-btn mk-btn_default"][contains(text(), "Оплата договору")]
     Wait Until Keyword Succeeds  10 x  1 s  Wait Until Element Is Visible  xpath=//div[@class="h2 text-center"][contains(text(), "Оплата договору")]
     Click Element  xpath=//select[@id="milestone-status"]
-#    ${date_paid}=  convert_date_for_date_paid  ${dateMet}
     ${date_paid}=  Convert Date  ${dateMet.split("+")[0]}  date_format=%Y-%m-%dT%H:%M:%S  result_format=%d.%m.%Y %H:%M
     Wait Element Animation  xpath=//input[@name="Milestone[dateMet]"]
     Focus  xpath=//input[@name="Milestone[dateMet]"]
     Clear Element Text	xpath=//input[@name="Milestone[dateMet]"]
-#    Input Text  xpath=//input[@name="Milestone[dateMet]"]  ${date_paid}
     Execute Javascript  $("[name='Milestone[dateMet]']")[0].value = "${date_paid}"
     Sleep  3
     Click Element  xpath=//button[@class="mk-btn mk-btn_accept"][contains(text(),"Завантажити дані")]
@@ -958,7 +951,6 @@ ${host}  http://test-eauction.open-tender.com.ua
     Choose File  xpath=//input[contains(@id,"ajax-upload-id")]  ${file_path}
     Wait Until Element Is Visible  xpath=//select[@id="document-0-documenttype"]
     Select From List By Value  xpath=//select[@id="document-0-documenttype"]  approvalProtocol
-#    Click Element  xpath=//button[@class="mk-btn mk-btn_accept"]
 
 
 Вказати дату прийняття наказу
@@ -971,9 +963,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Choose File  xpath=//input[contains(@id,"ajax-upload-id")]  ${file_path}
     Wait Until Page Contains Element  //select[@id="document-0-documenttype"] /option[contains(text(),"Наказ про завершення приватизації об’єкта")]
     Select From List By Value  xpath=//select[@id="document-0-documenttype"]  approvalProtocol
-#    ${date_nakaz}  convert_date_for_date_paid  ${dateMet}
     ${date_nakaz}=  Convert Date  ${dateMet.split("+")[0]}   date_format=%Y-%m-%dT%H:%M:%S  result_format=%d.%m.%Y %H:%M
-#    Input Text  xpath=//input[@name="Milestone[dateMet]"]  ${date_nakaz}
     Execute Javascript  $("[name='Milestone[dateMet]']")[0].value = "${date_nakaz}"
     Click Element  xpath=//button[@class="mk-btn mk-btn_accept"]
     Wait Until Element Is Not Visible  xpath=//*[contains(@class, "modal-backdrop")]
@@ -1010,9 +1000,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Choose File  xpath=//input[contains(@id,"ajax-upload-id")]  ${file_path}
     Wait Until Page Contains Element  //select[@id="document-0-documenttype"] /option[contains(text(),"Документи, що підтверджують виконання умов продажу")]
     Select From List By Value  xpath=//select[@id="document-0-documenttype"]  contractNotice
-#    ${date_paid}=  convert_date_for_date_paid  ${dateMet}
     ${date_paid}=  Convert Date  ${dateMet.split("+")[0]}   date_format=%Y-%m-%dT%H:%M:%S  result_format=%d.%m.%Y %H:%M
-#    Input Text  xpath=//input[@name="Milestone[dateMet]"]  ${date_paid}
     Execute Javascript  $("[name='Milestone[dateMet]']")[0].value = "${date_paid}"
     Click Element  xpath=//button[@class="mk-btn mk-btn_accept"][contains(text(),"Завантажити дані")]
     Wait Until Element Is Not Visible  xpath=//*[contains(@class, "modal-backdrop")]
@@ -1052,7 +1040,6 @@ Input Amount
 
 Input Date Auction
     [Arguments]  ${locator}  ${value}
-#    ${value}=  convert_date_for_auction  ${value}
     ${date}=  Convert Date  ${value.split(".")[0]}  date_format=%Y-%m-%dT%H:%M:%S  result_format=%d.%m.%Y %H:%M
     Clear Element Text  ${locator}
     Execute Javascript  document.querySelector('[${locator.split("=")[0]}="${locator.split("=")[1]}"]').value = "${date}"
