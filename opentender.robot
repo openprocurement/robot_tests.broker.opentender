@@ -843,8 +843,10 @@ ${host}  http://test-eauction.open-tender.com.ua
     Перейти на сторінку кваліфікації
     Wait Until Element Is Visible  xpath=//button[contains(text(), "Договір")]
     Click Element  xpath=//button[contains(text(), "Договір")]
-    Wait Until Element Is Visible  //div[contains(@class, "h2")][contains(text(), "Договір")]
+    Wait Element Animation  xpath=//div[@id="uploadcontract"]/descendant::input
     Choose File  xpath=//div[@id="uploadcontract"]/descendant::input  ${file_path}
+    Wait Until Element Is Visible  xpath=(//select[contains(@class,"contract_document_type_select")])[last()]
+    Select From List By Value  xpath=(//select[contains(@class,"contract_document_type_select")])[last()]  contractSigned
     Input Text  xpath=//input[@id="contract-contractnumber"]  1234567890
     Click Element  xpath=//button[@id="contract-fill-data"]
     Wait Until Element Is Not Visible  xpath=//button[@id="contract-fill-data"]
