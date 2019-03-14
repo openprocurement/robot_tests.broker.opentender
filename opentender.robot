@@ -639,6 +639,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=(//input[@class="file_name"])[last()]
     Input Text  xpath=(//input[@class="file_name"])[last()]  ${file_path.split('/')[-1]}
     Input Text  xpath=//input[@id="value-amount"]  ${value}
+    Select From List By Value  xpath=(//select[@class="select_document_type"])[last()]  commercialProposal
     Wait Until Keyword Succeeds   5 x   1 s  Run Keywords
     ...  Click Element  xpath=//input[@id="rules_accept"]
     ...  AND  Checkbox Should Be Selected  xpath=//input[@id="rules_accept"]
