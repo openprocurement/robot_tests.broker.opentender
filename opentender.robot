@@ -370,7 +370,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     ...  ELSE IF  'value.amount' in '${field}'  Get Text  xpath=(//div[contains(text(), "Початкова ціна продажу")]/following-sibling::div)[${lot_index + 1}]
     ...  ELSE IF  'minimalStep.amount' in '${field}'  Get Text  xpath=(//div[contains(text(), "Крок аукціону")]/following-sibling::div)[${lot_index + 1}]
     ...  ELSE IF  'guarantee.amount' in '${field}'  Get Text  xpath=(//div[contains(text(), "Гарантійний внесок")]/following-sibling::div)[${lot_index + 1}]
-    ...  ELSE IF  'tenderingDuration' in '${field}'  Get Text  xpath=(//div[contains(text(), "Період на подачу пропозицій")]/following-sibling::div)[${lot_index}]
+    ...  ELSE IF  'tenderingDuration' in '${field}'  Get Text  xpath=(//div[contains(text(), "Період на подачу пропозицій")]/following-sibling::div)[${lot_index + 1}]
     ...  ELSE IF  'auctionPeriod.startDate' in '${field}'  Get Text  xpath=(//div[contains(text(), "Період початку першого аукціону циклу")]/following-sibling::div)[${lot_index + 1}]
     ...  ELSE IF  'status' in '${field}'  Get Text  xpath=(//div[@data-test-id="auction.status"])[${lot_index + 1}]
     ...  ELSE IF  'tenderAttempts' in '${field}'  Get Text  xpath=(//span[@data-test-id="auction.tenderAttempts"])[${lot_index + 1}]
@@ -639,6 +639,7 @@ ${host}  http://test-eauction.open-tender.com.ua
     Wait Until Element Is Visible  xpath=(//input[@class="file_name"])[last()]
     Input Text  xpath=(//input[@class="file_name"])[last()]  ${file_path.split('/')[-1]}
     Input Text  xpath=//input[@id="value-amount"]  ${value}
+    Select From List By Value  xpath=(//select[@class="select_document_type"])[last()]  commercialProposal
     Wait Until Keyword Succeeds   5 x   1 s  Run Keywords
     ...  Click Element  xpath=//input[@id="rules_accept"]
     ...  AND  Checkbox Should Be Selected  xpath=//input[@id="rules_accept"]
